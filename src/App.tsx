@@ -7,9 +7,7 @@ function App() {
   const [type, setType] = React.useState("Point");
 
   const handleSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log("Hello")
     setType(event.target.value);
-    console.log(event.target.value);
   }
 
   return (
@@ -23,7 +21,7 @@ function App() {
             </label>
             <select onChange={handleSelect} className="form-select" id="type">
               <option value="Point">Point</option>
-              <option value="LineString" selected>LineString</option>
+              <option value="LineString">LineString</option>
               <option value="Polygon">Polygon</option>
               <option value="Circle">Circle</option>
               <option value="None">None</option>
