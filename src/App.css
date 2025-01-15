@@ -1,0 +1,21 @@
+@import '../node_modules/ol/ol.css';
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+  z-index: 0;
+}
+.row {
+  z-index: 1;
+  position: absolute;
+  bottom: 10px;
+  left: 20px;
+}
