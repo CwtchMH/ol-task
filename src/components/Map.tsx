@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import Draw from 'ol/interaction/Draw'
 import Modify from 'ol/interaction/Modify'
 import Snap from 'ol/interaction/Snap'
@@ -9,7 +9,8 @@ import { Vector as VectorSource } from 'ol/source.js'
 import { Style, Stroke, Fill, Circle as CircleStyle } from 'ol/style'
 import { Vector as VectorLayer } from 'ol/layer.js'
 import { Type } from 'ol/geom/Geometry'
-import { get } from 'ol/proj.js'
+import { SimpleGeometry } from 'ol/geom'
+// import { get } from 'ol/proj.js'
 
 const MapComponent = ({ type }: { type: string }) => {
   const mapRef = useRef<HTMLDivElement | null>(null) // Reference for the map container
@@ -86,7 +87,7 @@ const MapComponent = ({ type }: { type: string }) => {
         if (featureLayerRef.current) {
           featureLayerRef.current?.getSource()?.addFeature(feature)
         }
-        const geometry = feature.getGeometry()
+        const geometry = feature.getGeometry() as SimpleGeometry
         const coordinates = geometry?.getCoordinates();
         console.log(coordinates)
         console.log(feature);
@@ -114,7 +115,7 @@ const MapComponent = ({ type }: { type: string }) => {
           if (featureLayerRef.current) {
             featureLayerRef.current?.getSource()?.addFeature(feature)
           }
-          const geometry = feature.getGeometry()
+          const geometry = feature.getGeometry() as SimpleGeometry
           const coordinates = geometry?.getCoordinates();
           console.log(coordinates)
           console.log(feature)
