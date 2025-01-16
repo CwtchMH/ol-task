@@ -87,8 +87,9 @@ const MapComponent = ({ type }: { type: string }) => {
           featureLayerRef.current?.getSource()?.addFeature(feature)
         }
         const geometry = feature.getGeometry()
-        const coordinates = geometry?.get('coordinates')
+        const coordinates = geometry?.getCoordinates();
         console.log(coordinates)
+        console.log(feature);
       })
 
       drawRef.current = draw
@@ -114,8 +115,9 @@ const MapComponent = ({ type }: { type: string }) => {
             featureLayerRef.current?.getSource()?.addFeature(feature)
           }
           const geometry = feature.getGeometry()
-          const coordinates = geometry?.get('ordinates')
+          const coordinates = geometry?.getCoordinates();
           console.log(coordinates)
+          console.log(feature)
         })
 
         drawRef.current = draw
