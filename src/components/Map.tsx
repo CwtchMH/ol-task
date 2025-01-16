@@ -1,44 +1,41 @@
-import { useEffect, useRef } from 'react'
-import Draw from 'ol/interaction/Draw'
-import Modify from 'ol/interaction/Modify'
-import Snap from 'ol/interaction/Snap'
-import { Map, View } from 'ol'
-import TileLayer from 'ol/layer/Tile'
-import OSM from 'ol/source/OSM'
-import { Vector as VectorSource } from 'ol/source.js'
-import { Style, Stroke, Fill, Circle as CircleStyle } from 'ol/style'
-import { Vector as VectorLayer } from 'ol/layer.js'
-import { Type } from 'ol/geom/Geometry'
-import { SimpleGeometry } from 'ol/geom'
-// import { get } from 'ol/proj.js'
+import { useEffect, useRef } from "react";
+import Draw from "ol/interaction/Draw";
+import Modify from "ol/interaction/Modify";
+import Snap from "ol/interaction/Snap";
+import { Map, View } from "ol";
+import TileLayer from "ol/layer/Tile";
+import OSM from "ol/source/OSM";
+import { Vector as VectorSource } from "ol/source.js";
+import { Vector as VectorLayer } from "ol/layer.js";
+import { Type } from "ol/geom/Geometry";
+import { SimpleGeometry } from "ol/geom";
+import { style } from "../libs/style";
+import { selectClick, selectDoubleClick } from "../libs/select";
+import { useTypeContext } from "../context/TypeContext";
 
 const MapComponent = ({ type }: { type: string }) => {
-  const mapRef = useRef<HTMLDivElement | null>(null) // Reference for the map container
-  const mapInstance = useRef<Map | null>(null) // Reference to store the map instance
-  const sourceRef = useRef<VectorSource | null>(null) // Reference to store the source instance
-  const drawRef = useRef<Draw | null>(null) // Reference to store the draw instance
-  const featureLayerRef = useRef<VectorLayer | null>(null) // Reference to store the feature layer instance
-  const modifyRef = useRef<Modify | null>(null) // Reference to store the modify instance
-  const snapRef = useRef<Snap | null>(null) // Reference to store the snap instance
+  const { setType } = useTypeContext();
+  const mapRef = useRef<HTMLDivElement | null>(null); // Reference for the map container
+  const mapInstance = useRef<Map | null>(null); // Reference to store the map instance
+  const sourceRef = useRef<VectorSource | null>(null); // Reference to store the source instance
+  const drawRef = useRef<Draw | null>(null); // Reference to store the draw instance
+  const modifyRef = useRef<Modify | null>(null); // Reference to store the modify instance
+  const snapRef = useRef<Snap | null>(null); // Reference to store the snap instance
 
   useEffect(() => {
     if (mapRef.current && !mapInstance.current) {
       const raster = new TileLayer({
-        source: new OSM()
-      })
+        source: new OSM(),
+      });
 
-      const source = new VectorSource({ wrapX: false })
+      const source = new VectorSource({ wrapX: false });
 
       const vector = new VectorLayer({
-        source: source
-      })
+        source: source,
+        style: style,
+      });
 
-      sourceRef.current = source
-
-      // const projection = get('EPSG:3857')
-      // const extent = projection ? projection.getExtent().slice() : [0, 0, 0, 0]
-      // extent[0] += extent[0]
-      // extent[2] += extent[2]
+      sourceRef.current = source;
 
       mapInstance.current = new Map({
         target: mapRef.current,
@@ -46,91 +43,94 @@ const MapComponent = ({ type }: { type: string }) => {
         view: new View({
           center: [0, 0],
           zoom: 2,
-          //extent
-        })
-      })
+        }),
+      });
 
-      modifyRef.current = new Modify({ source: source })
-      mapInstance.current.addInteraction(modifyRef.current)
+      mapInstance.current.addInteraction(selectClick);
+      mapInstance.current.addInteraction(selectDoubleClick);
 
-      featureLayerRef.current = new VectorLayer({
-        source: new VectorSource(),
-        map: mapInstance.current,
-        style: new Style({
-          stroke: new Stroke({
-            color: 'blue', // Viền màu xanh
-            width: 3 // Độ rộng viền
-          }),
-          fill: new Fill({
-            color: 'rgba(0, 255, 0, 0.3)' // Màu fill xanh lá với độ mờ
-          }),
-          image: new CircleStyle({
-            radius: 5, // Bán kính đỉnh
-            fill: new Fill({
-              color: 'red' // Màu đỉnh
-            }),
-            stroke: new Stroke({
-              color: 'black', // Viền của đỉnh
-              width: 2 // Độ rộng viền của đỉnh
-            })
-          })
-        })
-      })
+      modifyRef.current = new Modify({
+        source: source,
+      });
+
+      mapInstance.current.addInteraction(modifyRef.current);
+
+      // selectDoubleClick.on("select", () => {
+      //   if (selectDoubleClick.getFeatures().getLength() > 0) {
+      //     document.body.style.cursor = "move"; // Đổi con trỏ khi có feature được chọn
+      //   } else {
+      //     document.body.style.cursor = "default";
+      //   }
+      // });
+
+      modifyRef.current.on("modifystart", () => {
+        if (mapInstance.current) {
+          mapInstance.current.removeInteraction(selectClick);
+          mapInstance.current.removeInteraction(selectDoubleClick);
+        }
+        document.body.style.cursor = "move";
+      });
+
+      modifyRef.current.on("modifyend", () => {
+        if (mapInstance.current) {
+          mapInstance.current.addInteraction(selectClick);
+          mapInstance.current.addInteraction(selectDoubleClick);
+        }
+        document.body.style.cursor = "default";
+      });
 
       const draw = new Draw({
         source: source,
-        type: type as Type
-      })
+        type: type as Type,
+      });
 
-      draw.on('drawend', (event) => {
-        const feature = event.feature
-        if (featureLayerRef.current) {
-          featureLayerRef.current?.getSource()?.addFeature(feature)
-        }
-        const geometry = feature.getGeometry() as SimpleGeometry
+      draw.on("drawend", (event) => {
+        const feature = event.feature;
+        const geometry = feature.getGeometry() as SimpleGeometry;
         const coordinates = geometry?.getCoordinates();
-        console.log(coordinates)
+        console.log(coordinates);
         console.log(feature);
-      })
+        setType("None");
+      });
 
-      drawRef.current = draw
+      drawRef.current = draw;
 
-      mapInstance.current.addInteraction(draw)
-      snapRef.current = new Snap({ source: source })
-      mapInstance.current.addInteraction(snapRef.current)
+      mapInstance.current.addInteraction(draw);
+      snapRef.current = new Snap({ source: source });
+      mapInstance.current.addInteraction(snapRef.current);
     }
 
     if (mapInstance.current && sourceRef.current) {
-      mapInstance.current.removeInteraction(drawRef.current as Draw)
-      mapInstance.current.removeInteraction(snapRef.current as Snap)
+      mapInstance.current.removeInteraction(drawRef.current as Draw);
+      mapInstance.current.removeInteraction(snapRef.current as Snap);
 
-      if (type !== 'None') {
+      if (type !== "None") {
         const draw = new Draw({
           source: sourceRef.current,
-          type: type as Type
-        })
+          type: type as Type,
+        });
 
-        draw.on('drawend', (event) => {
-          const feature = event.feature
-          if (featureLayerRef.current) {
-            featureLayerRef.current?.getSource()?.addFeature(feature)
-          }
-          const geometry = feature.getGeometry() as SimpleGeometry
+        draw.on("drawend", (event) => {
+          const feature = event.feature;
+          const geometry = feature.getGeometry() as SimpleGeometry;
           const coordinates = geometry?.getCoordinates();
-          console.log(coordinates)
-          console.log(feature)
-        })
+          console.log(coordinates);
+          console.log(feature);
+          setType("None");
+        });
 
-        drawRef.current = draw
+        drawRef.current = draw;
 
-        mapInstance.current.addInteraction(draw)
-        snapRef.current = new Snap({ source: sourceRef.current })
-        mapInstance.current.addInteraction(snapRef.current)
+        mapInstance.current.addInteraction(draw);
+        snapRef.current = new Snap({
+          source: sourceRef.current,
+        });
+        mapInstance.current.addInteraction(snapRef.current);
       }
     }
-  }, [type])
+  }, [type]);
 
-  return <div id="map" ref={mapRef} />
-}
+  return <div id="map" ref={mapRef} />;
+};
 
-export default MapComponent
+export default MapComponent;
