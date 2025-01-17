@@ -1,8 +1,10 @@
 import React from "react";
 
 export interface IType {
-    type: string;
-    setType: React.Dispatch<React.SetStateAction<string>>;
+    enableModify: boolean;
+    setEnableModify: React.Dispatch<React.SetStateAction<boolean>>;
+    enableDraw: boolean;
+    setEnableDraw: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export type ICoordinates = [number, number] | [number, number][];

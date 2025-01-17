@@ -1,20 +1,22 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react";
 import { OSM } from "ol/source";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import { Map, View } from "ol";
 import VectorSource from "ol/source/Vector";
-import '../styles/MapWrapper.css';
+import "../styles/MapWrapper.css";
 import { GeometryType } from "./controls";
-import { DrawInteractions } from "./interactions";
+import { DrawInteractions, ModifyInteractions } from "./interactions";
 import { CoordinatesDisplay } from "../informations";
 import { ICoordinates } from "../@types/type";
+import { useTypeContext } from "../context/TypeContext";
 
 export const MapWrapper = () => {
+  const { enableModify, setEnableModify, enableDraw, setEnableDraw } = useTypeContext();
 
   const [map, setMap] = useState<Map | null>(null);
   const [vectorLayer, setVectorLayer] = useState<VectorLayer | null>(null);
-  const [geometryType, setGeometryType] = useState<string>('Point');
+  const [geometryType, setGeometryType] = useState<string>("Point");
   const [coordinates, setCoordinates] = useState<ICoordinates>([]);
 
   const mapElement = useRef<HTMLDivElement | null>(null);
@@ -22,10 +24,8 @@ export const MapWrapper = () => {
 
   mapRef.current = map;
 
-
   useEffect(() => {
     if (mapElement.current) {
-
       const raster = new TileLayer({
         source: new OSM(),
       });
@@ -35,7 +35,6 @@ export const MapWrapper = () => {
       const vector = new VectorLayer({
         source: source,
       });
-
 
       const initialMap = new Map({
         layers: [raster, vector],
@@ -52,22 +51,32 @@ export const MapWrapper = () => {
       return () => {
         setMap(null);
         initialMap.setTarget(null);
-      }
+      };
     }
-  }, [])
+  }, []);
 
   return (
     <div>
       <div ref={mapElement} id="map"></div>
       <GeometryType setGeometryType={setGeometryType} />
-      {map && vectorLayer && (
-        <DrawInteractions map={map} vectorLayer={vectorLayer} geometryType={geometryType} setCoordinates={setCoordinates} />
+      {map && vectorLayer && enableDraw && (
+        <DrawInteractions
+          map={map}
+          vectorLayer={vectorLayer}
+          geometryType={geometryType}
+          setCoordinates={setCoordinates}
+        />
       )}
-      {geometryType !== 'Circle' && coordinates !== null && coordinates.length > 0 && (
-        <CoordinatesDisplay coordinates={coordinates} />
+      {geometryType !== "Circle" &&
+        coordinates !== null &&
+        coordinates.length > 0 && (
+          <CoordinatesDisplay coordinates={coordinates} />
+        )}
+      {map && vectorLayer && enableModify && (
+        <ModifyInteractions map={map} vectorLayer={vectorLayer} />
       )}
     </div>
-  )
-}
+  );
+};
 
 export default MapWrapper;
