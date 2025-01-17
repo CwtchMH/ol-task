@@ -5,6 +5,7 @@ import VectorSource from "ol/source/Vector";
 import { Type } from "ol/geom/Geometry";
 import Draw from "ol/interaction/Draw";
 import { ICoordinates } from "../../@types/type";
+import { style } from "../../libs/style";
 
 const DrawInteractions = ({
   map,
@@ -30,6 +31,7 @@ const DrawInteractions = ({
     map?.addInteraction(draw);
 
     const listenerKey = draw.on("drawend", (e) => {
+        e.feature.setStyle(style)
         setCoordinates(e.feature.getGeometry()?.getCoordinates());
     })
 

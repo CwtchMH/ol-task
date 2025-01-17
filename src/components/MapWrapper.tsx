@@ -56,11 +56,6 @@ export const MapWrapper = () => {
     }
   }, [])
 
-  useEffect(() => {
-    console.log('heloo \n' + coordinates);
-  }, [coordinates])
-
-
   return (
     <div>
       <div ref={mapElement} id="map"></div>
@@ -68,7 +63,7 @@ export const MapWrapper = () => {
       {map && vectorLayer && (
         <DrawInteractions map={map} vectorLayer={vectorLayer} geometryType={geometryType} setCoordinates={setCoordinates} />
       )}
-      {geometryType !== 'Circle' && coordinates.length > 0 && (
+      {geometryType !== 'Circle' && coordinates !== null && coordinates.length > 0 && (
         <CoordinatesDisplay coordinates={coordinates} />
       )}
     </div>
