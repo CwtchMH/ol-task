@@ -68,7 +68,7 @@ export const MapWrapper = () => {
       {map && vectorLayer && (
         <DrawInteractions map={map} vectorLayer={vectorLayer} geometryType={geometryType} setCoordinates={setCoordinates} />
       )}
-      {coordinates.length > 0 && (
+      {geometryType !== 'Circle' && coordinates.length > 0 && (
         <CoordinatesDisplay coordinates={coordinates} />
       )}
     </div>
