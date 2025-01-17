@@ -6,18 +6,20 @@ import { Map, View } from "ol";
 import VectorSource from "ol/source/Vector";
 import "../styles/MapWrapper.css";
 import { GeometryType } from "./controls";
-import { DrawInteractions, ModifyInteractions } from "./interactions";
+import { DrawInteractions, ModifyInteractions, SelectInteractions } from "./interactions";
 import { CoordinatesDisplay } from "../informations";
 import { ICoordinates } from "../@types/type";
 import { useTypeContext } from "../context/TypeContext";
+import { set } from "ol/transform";
 
 export const MapWrapper = () => {
-  const { enableModify, setEnableModify, enableDraw, setEnableDraw } = useTypeContext();
+  const { enableModify, setEnableModify, enableDraw, setEnableDraw, enableSelect, setEnableSelect } = useTypeContext();
 
   const [map, setMap] = useState<Map | null>(null);
   const [vectorLayer, setVectorLayer] = useState<VectorLayer | null>(null);
   const [geometryType, setGeometryType] = useState<string>("Point");
   const [coordinates, setCoordinates] = useState<ICoordinates>([]);
+  const [raster, setRaster] = useState<TileLayer | null>(null);
 
   const mapElement = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<Map | null>(null);
@@ -47,6 +49,7 @@ export const MapWrapper = () => {
 
       setMap(initialMap);
       setVectorLayer(vector);
+      setRaster(raster);
 
       return () => {
         setMap(null);
@@ -76,6 +79,14 @@ export const MapWrapper = () => {
         <ModifyInteractions
           map={map}
           vectorLayer={vectorLayer}
+          setCoordinates={setCoordinates}
+        />
+      )}
+      {map && vectorLayer && enableSelect && (
+        <SelectInteractions
+          map={map}
+          vectorLayer={vectorLayer}
+          raster={raster}
           setCoordinates={setCoordinates}
         />
       )}
