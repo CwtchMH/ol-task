@@ -13,7 +13,7 @@ body {
   width: 100%;
   z-index: 0;
 }
-.row {
+#control {
   z-index: 1;
   position: absolute;
   bottom: 10px;
