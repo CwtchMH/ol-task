@@ -4,11 +4,18 @@ import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import { Map, View } from "ol";
 import VectorSource from "ol/source/Vector";
+import '../styles/MapWrapper.css';
+import { GeometryType } from "./controls";
+import { DrawInteractions } from "./interactions";
+import { CoordinatesDisplay } from "../informations";
+import { ICoordinates } from "../@types/type";
 
 export const MapWrapper = () => {
 
   const [map, setMap] = useState<Map | null>(null);
   const [vectorLayer, setVectorLayer] = useState<VectorLayer | null>(null);
+  const [geometryType, setGeometryType] = useState<string>('Point');
+  const [coordinates, setCoordinates] = useState<ICoordinates>([]);
 
   const mapElement = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<Map | null>(null);
@@ -48,22 +55,22 @@ export const MapWrapper = () => {
       }
     }
   }, [])
+
+  useEffect(() => {
+    console.log('heloo \n' + coordinates);
+  }, [coordinates])
+
+
   return (
     <div>
       <div ref={mapElement} id="map"></div>
-      <div className="" id='control'>
-        <div className="" id="select-type">
-          <label htmlFor="type">Geometry type &nbsp;</label>
-          <select value='' id="type">
-            <option value="Point">Point</option>
-            <option value="LineString">LineString</option>
-            <option value="Polygon">Polygon</option>
-            <option value="Circle">Circle</option>
-            <option value="None">None</option>
-          </select>
-        </div>
-        <div className="" id ="coordinates"></div>
-      </div>
+      <GeometryType setGeometryType={setGeometryType} />
+      {map && vectorLayer && (
+        <DrawInteractions map={map} vectorLayer={vectorLayer} geometryType={geometryType} setCoordinates={setCoordinates} />
+      )}
+      {coordinates.length > 0 && (
+        <CoordinatesDisplay coordinates={coordinates} />
+      )}
     </div>
   )
 }
