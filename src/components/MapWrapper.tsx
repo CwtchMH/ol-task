@@ -73,7 +73,11 @@ export const MapWrapper = () => {
           <CoordinatesDisplay coordinates={coordinates} />
         )}
       {map && vectorLayer && enableModify && (
-        <ModifyInteractions map={map} vectorLayer={vectorLayer} />
+        <ModifyInteractions
+          map={map}
+          vectorLayer={vectorLayer}
+          setCoordinates={setCoordinates}
+        />
       )}
     </div>
   );
