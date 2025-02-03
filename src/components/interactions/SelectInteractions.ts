@@ -33,16 +33,33 @@ const SelectInteractions = ({
         map?.addInteraction(select);
 
         const listenerKey = select.on("select", (e) => {
-            const selectedFeatures = e.selected;
+          const selectedFeatures = e.selected;
 
-            selectedFeatures.forEach((feature) => {
-                feature.setStyle(selectedStyle);
-            });
+          if (selectedFeatures.length > 0) {
+            setEnableDraw(false); // Vô hiệu hóa vẽ
+            setEnableModify(false); // Vô hiệu hóa chỉnh sửa (nếu cần)
+          } else {
+            setEnableDraw(true); // Kích hoạt lại vẽ nếu không có đối tượng nào được chọn
+            setEnableModify(true); // Kích hoạt lại chỉnh sửa (nếu cần)
+          }
 
-            setCoordinates(e.selected[0].getGeometry()?.getCoordinates());
+          // Áp dụng style cho tất cả các đối tượng được chọn
+          selectedFeatures.forEach((feature) => {
+            feature.setStyle(selectedStyle);
+          });
 
+          // Kiểm tra và cập nhật tọa độ nếu có đối tượng được chọn
+          if (selectedFeatures.length > 0) {
+            const coordinates = selectedFeatures[0]
+              .getGeometry()
+              ?.getCoordinates();
+            if (coordinates) {
+              setCoordinates(coordinates);
+            }
+          } else {
+            setCoordinates(null);
+          }
         });
-
 
         return () => {
             map?.removeInteraction(select);
@@ -50,7 +67,7 @@ const SelectInteractions = ({
             
         }
 
-    }, []);
+    }, [map, vectorLayer, raster]);
 
     return null;
 }
