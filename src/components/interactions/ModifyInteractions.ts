@@ -1,56 +1,89 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Modify from "ol/interaction/Modify";
-import { Map } from "ol";
+import { Collection, Feature } from "ol";
 import VectorLayer from "ol/layer/Vector";
-import Collection from "ol/Collection";
 import VectorSource from "ol/source/Vector";
-import { useTypeContext } from "../../context/TypeContext";
+import { Map } from "ol";
 import { ICoordinates } from "../../@types/type";
-import { Vector } from "ol/source";
+import { selectDoubleClickStyle } from "../../libs/style";
+import { clone } from "ol/extent";
 
 const ModifyInteractions = ({
   map,
-  VectorLayer,
-  tempFeature,
   setCoordinates,
+  tempFeature,
+  mainVectorLayer,
+  vectorSource,
 }: {
   map: Map | null;
-  VectorLayer: VectorLayer | null;
-  tempFeature: any;
   setCoordinates: (coordinates: ICoordinates) => void;
+  tempFeature: any;
+  mainVectorLayer: VectorLayer | null;
+  vectorSource: VectorSource | null;
 }) => {
-  const { enableDraw, setEnableDraw, setEnableSelect } = useTypeContext();
+  const [isModifying, setIsModifying] = useState<boolean>(false);
+  const [clonedFeature, setClonedFeature] = useState<Feature | null>(null);
+  const [modifyInteraction, setModifyInteraction] = useState<Modify | null>(
+    null
+  );
 
   useEffect(() => {
+    if (!map || !tempFeature || !vectorSource) return;
 
-    const modify = new Modify({
-      source: VectorLayer?.getSource() as VectorSource,
-      features: new Collection([tempFeature]),
-    });
+    const handleDoubleClick = (e) => {
+      if (!isModifying) {
+        // Tạo bản sao của feature hiện tại
+        const cloned = tempFeature.clone();
+        setClonedFeature(cloned);
 
-    map?.addInteraction(modify);
+        // Thêm bản sao vào vector source
+        cloned.setStyle(selectDoubleClickStyle);
+        vectorSource.addFeature(cloned);
 
-    const listenerKeyStart = modify.on("modifystart", (e) => {
-      setEnableDraw(false);
-      setEnableSelect(false);
-      document.body.style.cursor = "grab";
-    });
+        // Tạo modify interaction và thêm vào map
+        const modify = new Modify({
+          features: new Collection([cloned]),
+          style: selectDoubleClickStyle,
+        });
+        map.addInteraction(modify);
+        setModifyInteraction(modify);
 
-    const listenerKeyEnd = modify.on("modifyend", (e) => {
-      setEnableDraw(true);
-      setEnableSelect(true);
-      setCoordinates(e.features.getArray()[0].getGeometry()?.getCoordinates());
-      document.body.style.cursor = "default";
-    });
+        setIsModifying(true);
+      } else {
+        // Kết thúc chỉnh sửa, ghi đè feature cũ bằng feature mới
+        if (clonedFeature) {
+          tempFeature.setGeometry(clonedFeature.getGeometry().clone());
+          setCoordinates(tempFeature.getGeometry().getCoordinates());
+          vectorSource.removeFeature(clonedFeature);
+          setClonedFeature(null);
+        }
+
+        // Xóa modify interaction khỏi map
+        if (modifyInteraction) {
+          map.removeInteraction(modifyInteraction);
+          setModifyInteraction(null);
+        }
+
+        setIsModifying(false);
+      }
+    };
+
+    map.on("dblclick", handleDoubleClick);
 
     return () => {
-        map?.removeInteraction(modify);
-        modify.un("modifystart", listenerKeyStart.listener);
-        modify.un("modifyend", listenerKeyEnd.listener);
-    }
-
-    // Your code here
-  }, [map, tempFeature, VectorLayer]);
+      map.un("dblclick", handleDoubleClick);
+      if (modifyInteraction) {
+        map.removeInteraction(modifyInteraction);
+      }
+    };
+  }, [
+    map,
+    tempFeature,
+    vectorSource,
+    isModifying,
+    clonedFeature,
+    modifyInteraction,
+  ]);
 
   return null;
 };

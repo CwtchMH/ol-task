@@ -62,11 +62,11 @@ export const pointerMoveStyle = new Style({
 
 export const selectDoubleClickStyle = new Style({
   stroke: new Stroke({
-    color: "black",
-    width: 3,
+    color: "red",
+    width: 8,
   }),
   fill: new Fill({
-    color: "rgba(241, 241, 233, 0.95)",
+    color: "black",
   }),
   image: new CircleStyle({
     radius: 7,

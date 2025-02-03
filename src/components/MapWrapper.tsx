@@ -10,16 +10,21 @@ import { DrawInteractions, SelectInteractions } from "./interactions";
 import { CoordinatesDisplay } from "../informations";
 import { ICoordinates } from "../@types/type";
 import { useTypeContext } from "../context/TypeContext";
+import { ModifyInteractions } from "./interactions";
 import { set } from "ol/transform";
+
 
 export const MapWrapper = () => {
   const { enableModify, setEnableModify, enableDraw, setEnableDraw, enableSelect, setEnableSelect } = useTypeContext();
 
   const [map, setMap] = useState<Map | null>(null);
+  const [vectorSource, setVectorSource] = useState<VectorSource | null>(null);
   const [vectorLayer, setVectorLayer] = useState<VectorLayer | null>(null);
   const [geometryType, setGeometryType] = useState<string>("Point");
   const [coordinates, setCoordinates] = useState<ICoordinates>([]);
   const [raster, setRaster] = useState<TileLayer | null>(null);
+  const [ isSelected, setIsSelected ] = useState<boolean>(false);
+  const [ tempFeature, setTempFeature ] = useState<any>(null);
 
   const mapElement = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<Map | null>(null);
@@ -51,6 +56,7 @@ export const MapWrapper = () => {
       setMap(initialMap);
       setVectorLayer(vector);
       setRaster(raster);
+      setVectorSource(source);
 
       return () => {
         setMap(null);
@@ -76,20 +82,23 @@ export const MapWrapper = () => {
         coordinates.length > 0 && (
           <CoordinatesDisplay coordinates={coordinates} />
         )}
-      {/* {map && vectorLayer && enableModify && selectedFeature && (
-        <ModifyInteractions
-          map={map}
-          vectorLayer={vectorLayer}
-          setCoordinates={setCoordinates}
-          selectedFeature={selectedFeature}
-        />
-      )} */}
       {map && vectorLayer && enableSelect && (
         <SelectInteractions
           map={map}
           vectorLayer={vectorLayer}
           raster={raster}
           setCoordinates={setCoordinates}
+          setIsSelected={setIsSelected}
+          setTempFeature={setTempFeature}
+        />
+      )}
+      {map && isSelected && (
+        <ModifyInteractions
+          map={map}
+          setCoordinates={setCoordinates}
+          tempFeature={tempFeature}
+          mainVectorLayer={vectorLayer}
+          vectorSource={vectorSource}
         />
       )}
     </div>
