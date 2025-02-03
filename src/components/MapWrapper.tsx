@@ -6,7 +6,7 @@ import { Map, View } from "ol";
 import VectorSource from "ol/source/Vector";
 import "../styles/MapWrapper.css";
 import { GeometryType } from "./controls";
-import { DrawInteractions, ModifyInteractions, SelectInteractions } from "./interactions";
+import { DrawInteractions, SelectInteractions } from "./interactions";
 import { CoordinatesDisplay } from "../informations";
 import { ICoordinates } from "../@types/type";
 import { useTypeContext } from "../context/TypeContext";
@@ -23,6 +23,7 @@ export const MapWrapper = () => {
 
   const mapElement = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<Map | null>(null);
+
 
   mapRef.current = map;
 
@@ -75,13 +76,14 @@ export const MapWrapper = () => {
         coordinates.length > 0 && (
           <CoordinatesDisplay coordinates={coordinates} />
         )}
-      {map && vectorLayer && enableModify && (
+      {/* {map && vectorLayer && enableModify && selectedFeature && (
         <ModifyInteractions
           map={map}
           vectorLayer={vectorLayer}
           setCoordinates={setCoordinates}
+          selectedFeature={selectedFeature}
         />
-      )}
+      )} */}
       {map && vectorLayer && enableSelect && (
         <SelectInteractions
           map={map}

@@ -2,17 +2,21 @@ import { useEffect } from "react";
 import Modify from "ol/interaction/Modify";
 import { Map } from "ol";
 import VectorLayer from "ol/layer/Vector";
+import Collection from "ol/Collection";
 import VectorSource from "ol/source/Vector";
 import { useTypeContext } from "../../context/TypeContext";
 import { ICoordinates } from "../../@types/type";
+import { Vector } from "ol/source";
 
 const ModifyInteractions = ({
   map,
-  vectorLayer,
-  setCoordinates
+  VectorLayer,
+  tempFeature,
+  setCoordinates,
 }: {
   map: Map | null;
-  vectorLayer: VectorLayer | null;
+  VectorLayer: VectorLayer | null;
+  tempFeature: any;
   setCoordinates: (coordinates: ICoordinates) => void;
 }) => {
   const { enableDraw, setEnableDraw, setEnableSelect } = useTypeContext();
@@ -20,7 +24,8 @@ const ModifyInteractions = ({
   useEffect(() => {
 
     const modify = new Modify({
-      source: vectorLayer?.getSource() as VectorSource,
+      source: VectorLayer?.getSource() as VectorSource,
+      features: new Collection([tempFeature]),
     });
 
     map?.addInteraction(modify);
@@ -45,7 +50,7 @@ const ModifyInteractions = ({
     }
 
     // Your code here
-  }, [map, vectorLayer]);
+  }, [map, tempFeature, VectorLayer]);
 
   return null;
 };

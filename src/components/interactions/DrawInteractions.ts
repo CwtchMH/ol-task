@@ -6,6 +6,7 @@ import { Type } from "ol/geom/Geometry";
 import Draw from "ol/interaction/Draw";
 import { ICoordinates } from "../../@types/type";
 import { style } from "../../libs/style";
+import { useTypeContext } from "../../context/TypeContext";
 
 const DrawInteractions = ({
   map,
@@ -31,15 +32,14 @@ const DrawInteractions = ({
     map?.addInteraction(draw);
 
     const listenerKey = draw.on("drawend", (e) => {
-        e.feature.setStyle(style)
-        setCoordinates(e.feature.getGeometry()?.getCoordinates());
-    })
+      e.feature.setStyle(style);
+      setCoordinates(e.feature.getGeometry()?.getCoordinates());
+    });
 
     return () => {
-        
-        map?.removeInteraction(draw);
-        draw.un("drawend", listenerKey.listener);
-    }
+      map?.removeInteraction(draw);
+      draw.un("drawend", listenerKey.listener);
+    };
   }, [map, vectorLayer, geometryType]);
 
   return null;
