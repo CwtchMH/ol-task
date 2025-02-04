@@ -1,4 +1,3 @@
-import "../styles/CoordinatesDisplay.css";
 import { ICoordinates } from "../@types/type";
 
 export default function CoordinatesDisplay({

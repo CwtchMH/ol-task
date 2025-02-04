@@ -4,8 +4,6 @@ import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import { Map, View } from "ol";
 import VectorSource from "ol/source/Vector";
-import "../styles/MapWrapper.css";
-import { GeometryType } from "./controls";
 import { DrawInteractions, SelectInteractions } from "./interactions";
 import { CoordinatesDisplay } from "../informations";
 import { ICoordinates } from "../@types/type";
@@ -19,7 +17,7 @@ export const MapWrapper = () => {
   const [map, setMap] = useState<Map | null>(null);
   const [vectorSource, setVectorSource] = useState<VectorSource | null>(null);
   const [vectorLayer, setVectorLayer] = useState<VectorLayer | null>(null);
-  const [geometryType, setGeometryType] = useState<string>("Point");
+  const [geometryType, setGeometryType] = useState<string>("");
   const [coordinates, setCoordinates] = useState<ICoordinates>([]);
   const [raster, setRaster] = useState<TileLayer | null>(null);
   const [isSelected, setIsSelected] = useState<boolean>(false);
@@ -32,6 +30,7 @@ export const MapWrapper = () => {
 
   useEffect(() => {
     if (mapElement.current) {
+      setGeometryType("Polygon");
       const raster = new TileLayer({
         source: new OSM(),
       });
@@ -64,9 +63,9 @@ export const MapWrapper = () => {
   }, []);
 
   return (
-    <div>
-      <div ref={mapElement} id="map"></div>
-      <GeometryType setGeometryType={setGeometryType} />
+    <div className="w-full">
+      <div ref={mapElement} id="map" className="h-[100vh] w-auto"></div>
+      {/* <GeometryType setGeometryType={setGeometryType} /> */}
       {map && vectorLayer && enableDraw && (
         <DrawInteractions
           map={map}

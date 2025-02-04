@@ -4,9 +4,9 @@ import { IType } from "../@types/type";
 export const TypeContext = React.createContext<IType | null>(null);
 
 export const TypeProvider = ({ children }: { children: React.ReactNode }) => {
-  const [enableModify, setEnableModify] = React.useState(true);
-  const [enableDraw, setEnableDraw] = React.useState(true);
-  const [enableSelect, setEnableSelect] = React.useState(true);
+  const [enableModify, setEnableModify] = React.useState(false);
+  const [enableDraw, setEnableDraw] = React.useState(false);
+  const [enableSelect, setEnableSelect] = React.useState(false);
 
   return (
     <TypeContext.Provider

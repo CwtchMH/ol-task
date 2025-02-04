@@ -48,7 +48,7 @@ const ModifyInteractions = ({
       } else {
         if (clonedFeature) {
           tempFeature.setGeometry(clonedFeature.getGeometry()?.clone());
-          setCoordinates(tempFeature.getGeometry().getCoordinates());
+          setCoordinates(tempFeature.getGeometry()?.getCoordinates());
           vectorSource.removeFeature(clonedFeature);
           setClonedFeature(null);
         }
