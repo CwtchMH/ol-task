@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Map } from "ol";
 import VectorLayer from "ol/layer/Vector";
 import { ICoordinates } from "../../@types/type";
 import Select from "ol/interaction/Select";
-import { selectedStyle, selectDoubleClickStyle, style } from "../../libs/style";
+import { selectedStyle } from "../../libs/style";
 import TileLayer from "ol/layer/Tile";
 import { useTypeContext } from "../../context/TypeContext";
-import { set } from "ol/transform";
+import Feature from "ol/Feature";
+import { SimpleGeometry } from "ol/geom";
 
 const SelectInteractions = ({
   map,
@@ -21,7 +22,7 @@ const SelectInteractions = ({
   raster: TileLayer | null;
   setCoordinates: (coordinates: ICoordinates) => void;
   setIsSelected: (isSelected: boolean) => void;
-  setTempFeature: (tempFeature: any) => void;
+  setTempFeature: (tempFeature: Feature | null) => void;
 }) => {
   const { setEnableModify, setEnableDraw } = useTypeContext();
   useEffect(() => {
@@ -40,12 +41,17 @@ const SelectInteractions = ({
       if (selectedFeatures.length > 0) {
         const feature = selectedFeatures[0];
 
-        console.log(feature.getGeometry()?.getCoordinates());
-
         feature.setStyle(selectedStyle);
         setIsSelected(true);
 
-        setCoordinates(feature.getGeometry()?.getCoordinates());
+        const geometry = feature.getGeometry();
+        if (geometry instanceof SimpleGeometry) {
+          setCoordinates(geometry.getCoordinates() as ICoordinates);
+        } else {
+          // Xử lý trường hợp không có getCoordinates
+          console.warn("Geometry doesn't have getCoordinates method.");
+        }
+
         setEnableModify(false);
         setEnableDraw(false);
         setTempFeature(feature);

@@ -9,7 +9,16 @@ export const TypeProvider = ({ children }: { children: React.ReactNode }) => {
   const [enableSelect, setEnableSelect] = React.useState(true);
 
   return (
-    <TypeContext.Provider value={{ enableModify, setEnableModify, enableDraw, setEnableDraw, enableSelect, setEnableSelect }}>
+    <TypeContext.Provider
+      value={{
+        enableModify,
+        setEnableModify,
+        enableDraw,
+        setEnableDraw,
+        enableSelect,
+        setEnableSelect,
+      }}
+    >
       {children}
     </TypeContext.Provider>
   );

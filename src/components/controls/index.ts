@@ -1,1 +1,1 @@
-export {default as GeometryType} from './GeometryType';
+export { default as GeometryType } from "./GeometryType";

@@ -11,11 +11,10 @@ import { CoordinatesDisplay } from "../informations";
 import { ICoordinates } from "../@types/type";
 import { useTypeContext } from "../context/TypeContext";
 import { ModifyInteractions } from "./interactions";
-import { set } from "ol/transform";
-
+import Feature from "ol/Feature";
 
 export const MapWrapper = () => {
-  const { enableModify, setEnableModify, enableDraw, setEnableDraw, enableSelect, setEnableSelect } = useTypeContext();
+  const { enableDraw, enableSelect } = useTypeContext();
 
   const [map, setMap] = useState<Map | null>(null);
   const [vectorSource, setVectorSource] = useState<VectorSource | null>(null);
@@ -23,12 +22,11 @@ export const MapWrapper = () => {
   const [geometryType, setGeometryType] = useState<string>("Point");
   const [coordinates, setCoordinates] = useState<ICoordinates>([]);
   const [raster, setRaster] = useState<TileLayer | null>(null);
-  const [ isSelected, setIsSelected ] = useState<boolean>(false);
-  const [ tempFeature, setTempFeature ] = useState<any>(null);
+  const [isSelected, setIsSelected] = useState<boolean>(false);
+  const [tempFeature, setTempFeature] = useState<Feature | null>(null);
 
   const mapElement = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<Map | null>(null);
-
 
   mapRef.current = map;
 
@@ -97,7 +95,6 @@ export const MapWrapper = () => {
           map={map}
           setCoordinates={setCoordinates}
           tempFeature={tempFeature}
-          mainVectorLayer={vectorLayer}
           vectorSource={vectorSource}
         />
       )}

@@ -6,7 +6,6 @@ import { Type } from "ol/geom/Geometry";
 import Draw from "ol/interaction/Draw";
 import { ICoordinates } from "../../@types/type";
 import { style } from "../../libs/style";
-import { useTypeContext } from "../../context/TypeContext";
 
 const DrawInteractions = ({
   map,
