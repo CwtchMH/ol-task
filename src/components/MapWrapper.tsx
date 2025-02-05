@@ -4,22 +4,21 @@ import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import { Map, View } from "ol";
 import VectorSource from "ol/source/Vector";
-import { DrawInteractions, SelectInteractions } from "./interactions";
 import { CoordinatesDisplay } from "../informations";
+import { DrawInteractions, SelectInteractions } from "./interactions";
 import { ICoordinates } from "../@types/type";
 import { useTypeContext } from "../context/TypeContext";
 import { ModifyInteractions } from "./interactions";
 import Feature from "ol/Feature";
+import { styleOrigin } from "../libs/style";
 
 export const MapWrapper = () => {
   const { enableDraw, enableSelect } = useTypeContext();
 
   const [map, setMap] = useState<Map | null>(null);
-  const [vectorSource, setVectorSource] = useState<VectorSource | null>(null);
   const [vectorLayer, setVectorLayer] = useState<VectorLayer | null>(null);
   const [geometryType, setGeometryType] = useState<string>("");
   const [coordinates, setCoordinates] = useState<ICoordinates>([]);
-  const [raster, setRaster] = useState<TileLayer | null>(null);
   const [isSelected, setIsSelected] = useState<boolean>(false);
   const [tempFeature, setTempFeature] = useState<Feature | null>(null);
 
@@ -39,6 +38,7 @@ export const MapWrapper = () => {
 
       const vector = new VectorLayer({
         source: source,
+        style: styleOrigin,
       });
 
       const initialMap = new Map({
@@ -52,8 +52,6 @@ export const MapWrapper = () => {
 
       setMap(initialMap);
       setVectorLayer(vector);
-      setRaster(raster);
-      setVectorSource(source);
 
       return () => {
         setMap(null);
@@ -83,7 +81,6 @@ export const MapWrapper = () => {
         <SelectInteractions
           map={map}
           vectorLayer={vectorLayer}
-          raster={raster}
           setCoordinates={setCoordinates}
           setIsSelected={setIsSelected}
           setTempFeature={setTempFeature}
@@ -94,7 +91,7 @@ export const MapWrapper = () => {
           map={map}
           setCoordinates={setCoordinates}
           tempFeature={tempFeature}
-          vectorSource={vectorSource}
+          vectorLayer={vectorLayer}
         />
       )}
     </div>

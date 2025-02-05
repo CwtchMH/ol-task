@@ -1,22 +1,12 @@
 import { Style, Stroke, Fill, Circle as CircleStyle } from "ol/style";
 
-export const style = new Style({
-  stroke: new Stroke({
-    color: "#42a8ed",
-    width: 3,
-  }),
+export const styleOrigin = new Style({
   fill: new Fill({
-    color: "rgba(0, 255, 0, 0.3)",
+    color: "rgba(173, 216, 230, 0.5)", // Màu xanh dương nhạt
   }),
-  image: new CircleStyle({
-    radius: 5,
-    fill: new Fill({
-      color: "pink",
-    }),
-    stroke: new Stroke({
-      color: "black",
-      width: 2,
-    }),
+  stroke: new Stroke({
+    color: "rgba(0, 0, 255, 1)", // Màu xanh dương đậm
+    width: 2,
   }),
 });
 
@@ -40,23 +30,13 @@ export const selectedStyle = new Style({
   }),
 });
 
-export const pointerMoveStyle = new Style({
-  stroke: new Stroke({
-    color: "black",
-    width: 3,
-  }),
+export const styleDraw = new Style({
   fill: new Fill({
-    color: "rgba(216, 29, 207, 0.3)",
+    color: "rgba(144, 238, 144, 0.5)", // Màu xanh lá nhạt
   }),
-  image: new CircleStyle({
-    radius: 7,
-    fill: new Fill({
-      color: "red",
-    }),
-    stroke: new Stroke({
-      color: "#eeeeee",
-      width: 2,
-    }),
+  stroke: new Stroke({
+    color: "rgba(0, 128, 0, 1)", // Màu xanh lá đậm
+    width: 2,
   }),
 });
 
@@ -77,5 +57,25 @@ export const selectDoubleClickStyle = new Style({
       color: "black",
       width: 2,
     }),
+  }),
+});
+
+export const styleModify = new Style({
+  fill: new Fill({
+    color: "rgba(144, 238, 144, 0.5)", // Màu xanh lá nhạt
+  }),
+  stroke: new Stroke({
+    color: "rgba(0, 128, 0, 1)", // Màu xanh lá đậm
+    width: 2,
+  }),
+});
+
+export const styleTranslate = new Style({
+  fill: new Fill({
+    color: "rgba(255, 182, 193, 0.5)", // Màu đỏ nhạt
+  }),
+  stroke: new Stroke({
+    color: "rgba(255, 0, 0, 1)", // Màu đỏ đậm
+    width: 2,
   }),
 });
