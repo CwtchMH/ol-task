@@ -7,6 +7,7 @@ export const TypeProvider = ({ children }: { children: React.ReactNode }) => {
   const [enableModify, setEnableModify] = React.useState(false);
   const [enableDraw, setEnableDraw] = React.useState(false);
   const [enableSelect, setEnableSelect] = React.useState(false);
+  const [enableTranslate, setEnableTranslate] = React.useState(false);
 
   return (
     <TypeContext.Provider
@@ -17,6 +18,8 @@ export const TypeProvider = ({ children }: { children: React.ReactNode }) => {
         setEnableDraw,
         enableSelect,
         setEnableSelect,
+        enableTranslate,
+        setEnableTranslate,
       }}
     >
       {children}

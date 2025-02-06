@@ -1,6 +1,33 @@
+import { useEffect } from "react";
+import { useTypeContext } from "../../context/TypeContext";
+
 export const TranslateAction = () => {
+  const {
+    setEnableTranslate,
+    enableTranslate,
+    setEnableModify,
+    setEnableSelect,
+    setEnableDraw,
+  } = useTypeContext();
+
+  const handleClick = () => {
+    setEnableTranslate(true);
+    setEnableModify(false);
+    setEnableSelect(false);
+    setEnableDraw(false);
+  };
+
+  useEffect(() => {
+    if (enableTranslate) {
+      console.log("Translate action enabled");
+    }
+  }, [enableTranslate]);
+
   return (
-    <div className="hover:bg-blue-400 hover:cursor-pointer p-2 rounded-md">
+    <div
+      className="hover:bg-blue-400 hover:cursor-pointer p-2 rounded-md"
+      onClick={handleClick}
+    >
       <svg
         xmlns="http://www.w3.org/2000/svg"
         fill="none"

@@ -21,7 +21,8 @@ const SelectInteractions = ({
   setIsSelected: (isSelected: boolean) => void;
   setTempFeature: (tempFeature: Feature | null) => void;
 }) => {
-  const { setEnableModify, setEnableDraw } = useTypeContext();
+  const { setEnableModify, setEnableDraw, setEnableSelect, enableSelect } =
+    useTypeContext();
   useEffect(() => {
     if (!map || !vectorLayer) return;
 
@@ -41,17 +42,21 @@ const SelectInteractions = ({
         setCoordinates(feature.getCoordinates() as ICoordinates);
       }
       setIsSelected(true);
+      console.log("Selected feature", typeof feature);
+      setTempFeature(new Feature(feature.getGeometry()));
       console.log("Selected feature", feature);
-      setTempFeature(feature);
       setEnableModify(true);
       setEnableDraw(false);
+      setEnableSelect(false);
+
+      console.log(vectorLayer.getSource()?.getFeatures().length);
     });
 
     return () => {
       map.removeInteraction(select);
       select.un("select", listener.listener);
     };
-  }, [map, vectorLayer]);
+  }, [map, vectorLayer, enableSelect]);
 
   return null;
 };

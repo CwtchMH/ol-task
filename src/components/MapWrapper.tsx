@@ -5,7 +5,11 @@ import VectorLayer from "ol/layer/Vector";
 import { Map, View } from "ol";
 import VectorSource from "ol/source/Vector";
 import { CoordinatesDisplay } from "../informations";
-import { DrawInteractions, SelectInteractions } from "./interactions";
+import {
+  DrawInteractions,
+  SelectInteractions,
+  TranslateInteractions,
+} from "./interactions";
 import { ICoordinates } from "../@types/type";
 import { useTypeContext } from "../context/TypeContext";
 import { ModifyInteractions } from "./interactions";
@@ -13,7 +17,7 @@ import Feature from "ol/Feature";
 import { styleOrigin } from "../libs/style";
 
 export const MapWrapper = () => {
-  const { enableDraw, enableSelect } = useTypeContext();
+  const { enableDraw, enableSelect, enableTranslate } = useTypeContext();
 
   const [map, setMap] = useState<Map | null>(null);
   const [vectorLayer, setVectorLayer] = useState<VectorLayer | null>(null);
@@ -60,6 +64,12 @@ export const MapWrapper = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (tempFeature) {
+      console.log("tempFeature", tempFeature);
+    }
+  }, [tempFeature]);
+
   return (
     <div className="w-full">
       <div ref={mapElement} id="map" className="h-[100vh] w-auto"></div>
@@ -86,13 +96,16 @@ export const MapWrapper = () => {
           setTempFeature={setTempFeature}
         />
       )}
-      {map && isSelected && (
+      {map && vectorLayer && isSelected && (
         <ModifyInteractions
           map={map}
           setCoordinates={setCoordinates}
           tempFeature={tempFeature}
           vectorLayer={vectorLayer}
         />
+      )}
+      {map && vectorLayer && enableTranslate && (
+        <TranslateInteractions map={map} vectorLayer={vectorLayer} />
       )}
     </div>
   );

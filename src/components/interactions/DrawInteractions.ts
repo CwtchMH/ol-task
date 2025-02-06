@@ -103,6 +103,8 @@ const DrawInteractions = ({
       map?.removeInteraction(draw);
       draw.un("drawstart", listenerKeyStart.listener);
       draw.un("drawend", listenerKeyEnd.listener);
+      map?.un("dblclick", handleDblClick);
+      map?.un("singleclick", handleSingleClick);
     };
   }, [map, vectorLayer, geometryType]);
 

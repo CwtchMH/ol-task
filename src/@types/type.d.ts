@@ -7,6 +7,8 @@ export interface IType {
   setEnableDraw: React.Dispatch<React.SetStateAction<boolean>>;
   enableSelect: boolean;
   setEnableSelect: React.Dispatch<React.SetStateAction<boolean>>;
+  enableTranslate: boolean;
+  setEnableTranslate: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export type ICoordinates = [number, number] | [number, number][];
