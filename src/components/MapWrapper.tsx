@@ -87,7 +87,7 @@ export const MapWrapper = () => {
         coordinates.length > 0 && (
           <CoordinatesDisplay coordinates={coordinates} />
         )}
-      {map && vectorLayer && enableSelect && (
+      {map && vectorLayer && enableSelect && !enableTranslate && (
         <SelectInteractions
           map={map}
           vectorLayer={vectorLayer}

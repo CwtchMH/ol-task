@@ -83,14 +83,12 @@ const TranslateInteractions = ({
           .getGeometry()
           ?.intersectsCoordinate(featureAtDblClick)
       ) {
-        console.log(vectorLayer?.getSource()?.getFeatures().length);
-        console.log("Feature intersects at double click");
         vectorLayer?.getSource()?.addFeature(selectedFeatureRef.current);
-        console.log(vectorLayer?.getSource()?.getFeatures().length);
         sourceTranslate.clear();
         selectedFeatureRef.current = null;
         extraFeatureRef.current = null;
         select.getFeatures().clear();
+        alert("Done translating a feature");
       } else {
         console.log("Feature does not intersect at double click");
         vectorLayer?.getSource()?.addFeature(extraFeatureRef.current);

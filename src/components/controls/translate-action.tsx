@@ -25,7 +25,7 @@ export const TranslateAction = () => {
 
   return (
     <div
-      className="hover:bg-blue-400 hover:cursor-pointer p-2 rounded-md"
+      className={`hover:bg-blue-400 ${enableTranslate ? "bg-blue-400" : ""} hover:cursor-pointer p-2 rounded-md`}
       onClick={handleClick}
     >
       <svg

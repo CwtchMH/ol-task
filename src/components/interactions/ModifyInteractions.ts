@@ -117,6 +117,7 @@ const ModifyInteractions = ({
         map.removeLayer(layerModify);
         setEnableSelect(true);
         modifiedFeatureRef.current = null;
+        alert("Done modifying a feature");
       }
     };
 
@@ -132,6 +133,7 @@ const ModifyInteractions = ({
       }
       modify.un("modifyend", modifyEndListener.listener);
       map.un("dblclick", handleDoubleClick);
+      map.un("singleclick", handleSingleClick);
     };
   }, [map, tempFeature, vectorLayer]);
 

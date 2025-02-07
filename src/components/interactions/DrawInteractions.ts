@@ -89,6 +89,7 @@ const DrawInteractions = ({
           sourceDraw.clear();
           document.body.style.cursor = "default";
           console.log(source.getFeatures().length);
+          alert("Done drawing a feature");
           setIsDrawing(false);
         }
       }

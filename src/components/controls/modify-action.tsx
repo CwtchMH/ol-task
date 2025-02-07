@@ -19,6 +19,12 @@ export const ModifyAction = () => {
   useEffect(() => {
     if (enableSelect || enableModify) {
       console.log("Modify or Select action enabled");
+      if (enableModify) {
+        console.log("Modify action enabled");
+      }
+      if (enableSelect) {
+        console.log("Select action enabled");
+      }
     }
   }, [enableModify, enableSelect]);
 
