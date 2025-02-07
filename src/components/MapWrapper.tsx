@@ -59,7 +59,7 @@ export const MapWrapper = () => {
 
       return () => {
         setMap(null);
-        initialMap.setTarget(null);
+        initialMap.setTarget("null");
       };
     }
   }, []);
