@@ -1,5 +1,3 @@
-import "../../styles/GeometryType.css";
-
 export default function GeometryType({
   setGeometryType,
 }: {
@@ -10,10 +8,10 @@ export default function GeometryType({
   };
 
   return (
-    <div className="" id="control">
+    <div className="text-black" id="control">
       <div className="" id="select-type">
         <label htmlFor="type">Geometry type &nbsp;</label>
-        <select onChange={handleSelect} id="type">
+        <select className="border" onChange={handleSelect} id="type">
           <option value="Point">Point</option>
           <option value="LineString">LineString</option>
           <option value="Polygon">Polygon</option>

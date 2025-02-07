@@ -1,89 +1,141 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import Modify from "ol/interaction/Modify";
-import { Collection, Feature } from "ol";
-import VectorLayer from "ol/layer/Vector";
-import VectorSource from "ol/source/Vector";
+import { Collection, Feature, MapBrowserEvent } from "ol";
 import { Map } from "ol";
+import VectorLayer from "ol/layer/Vector";
 import { ICoordinates } from "../../@types/type";
-import { selectDoubleClickStyle } from "../../libs/style";
-import { clone } from "ol/extent";
+import VectorSource from "ol/source/Vector";
+import { styleModify } from "../../libs/style";
+import { SimpleGeometry } from "ol/geom";
+import { useTypeContext } from "../../context/TypeContext";
 
 const ModifyInteractions = ({
   map,
   setCoordinates,
   tempFeature,
-  mainVectorLayer,
-  vectorSource,
+  vectorLayer,
 }: {
   map: Map | null;
   setCoordinates: (coordinates: ICoordinates) => void;
-  tempFeature: any;
-  mainVectorLayer: VectorLayer | null;
-  vectorSource: VectorSource | null;
+  tempFeature: Feature | null;
+  vectorLayer: VectorLayer | null;
 }) => {
-  const [isModifying, setIsModifying] = useState<boolean>(false);
-  const [clonedFeature, setClonedFeature] = useState<Feature | null>(null);
-  const [modifyInteraction, setModifyInteraction] = useState<Modify | null>(
-    null
-  );
+  const modifiedFeatureRef = useRef<Feature | null>(null);
+
+  const { setEnableSelect, setEnableModify } = useTypeContext();
 
   useEffect(() => {
-    if (!map || !tempFeature || !vectorSource) return;
+    console.log("ModifyInteractions");
+    if (!map || !tempFeature || !vectorLayer) return;
 
-    const handleDoubleClick = (e) => {
-      if (!isModifying) {
-        // Tạo bản sao của feature hiện tại
-        const cloned = tempFeature.clone();
-        setClonedFeature(cloned);
+    const source = vectorLayer.getSource() as VectorSource;
 
-        // Thêm bản sao vào vector source
-        cloned.setStyle(selectDoubleClickStyle);
-        vectorSource.addFeature(cloned);
+    //console.log(source.getFeatures().length);
 
-        // Tạo modify interaction và thêm vào map
-        const modify = new Modify({
-          features: new Collection([cloned]),
-          style: selectDoubleClickStyle,
-        });
-        map.addInteraction(modify);
-        setModifyInteraction(modify);
+    // Tạo một layer riêng để modify
+    const sourceModify = new VectorSource();
+    const layerModify = new VectorLayer({
+      source: sourceModify,
+      style: styleModify,
+    });
 
-        setIsModifying(true);
-      } else {
-        // Kết thúc chỉnh sửa, ghi đè feature cũ bằng feature mới
-        if (clonedFeature) {
-          tempFeature.setGeometry(clonedFeature.getGeometry().clone());
-          setCoordinates(tempFeature.getGeometry().getCoordinates());
-          vectorSource.removeFeature(clonedFeature);
-          setClonedFeature(null);
-        }
+    map.addLayer(layerModify);
 
-        // Xóa modify interaction khỏi map
-        if (modifyInteraction) {
-          map.removeInteraction(modifyInteraction);
-          setModifyInteraction(null);
-        }
+    source.removeFeature(tempFeature);
+    sourceModify.addFeature(tempFeature);
 
-        setIsModifying(false);
+    // console.log(source.getFeatures().length);
+    // console.log(sourceModify.getFeatures().length);
+
+    const modify = new Modify({
+      source: sourceModify,
+      features: new Collection([tempFeature]),
+    });
+
+    map.addInteraction(modify);
+
+    const modifyEndListener = modify.on("modifyend", (e) => {
+      const modifiedFeature = e.features.getArray()[0];
+      modifiedFeatureRef.current = modifiedFeature;
+      if (modifiedFeature instanceof SimpleGeometry) {
+        setCoordinates(
+          modifiedFeature.getGeometry()?.get("Coordinates") as ICoordinates,
+        );
+      }
+    });
+
+    const handleSingleClick = (e: MapBrowserEvent<UIEvent>) => {
+      const featureAtClick = e.coordinate;
+
+      if (!modifiedFeatureRef.current) {
+        setEnableSelect(true);
+        setEnableModify(false);
+        return;
+      }
+
+      if (
+        !modifiedFeatureRef.current
+          .getGeometry()
+          ?.intersectsCoordinate(featureAtClick)
+      ) {
+        setEnableSelect(true);
+        setEnableModify(false);
+        return;
+      }
+      // if (
+      //   modifiedFeatureRef.current
+      //     .getGeometry()
+      //     ?.intersectsCoordinate(featureAtClick)
+      // ) {
+      //   sourceModify.removeFeature(modifiedFeatureRef.current);
+      //   source.addFeature(modifiedFeatureRef.current);
+
+      //   map.removeInteraction(modify);
+      //   map.removeLayer(layerModify);
+      //   setEnableSelect(true);
+      //   modifiedFeatureRef.current = null;
+      // }
+    };
+
+    const handleDoubleClick = (e: MapBrowserEvent<UIEvent>) => {
+      const featureAtDblClick = e.coordinate;
+
+      if (!modifiedFeatureRef.current) {
+        console.log("No feature to modify");
+        return;
+      }
+
+      if (
+        modifiedFeatureRef.current
+          .getGeometry()
+          ?.intersectsCoordinate(featureAtDblClick)
+      ) {
+        sourceModify.removeFeature(modifiedFeatureRef.current);
+        source.addFeature(modifiedFeatureRef.current);
+
+        map.removeInteraction(modify);
+        map.removeLayer(layerModify);
+        setEnableSelect(true);
+        modifiedFeatureRef.current = null;
+        alert("Done modifying a feature");
       }
     };
 
     map.on("dblclick", handleDoubleClick);
+    map.on("singleclick", handleSingleClick);
 
     return () => {
-      map.un("dblclick", handleDoubleClick);
-      if (modifyInteraction) {
-        map.removeInteraction(modifyInteraction);
+      if (modify) {
+        map.removeInteraction(modify);
       }
+      if (layerModify) {
+        map.removeLayer(layerModify);
+      }
+      modify.un("modifyend", modifyEndListener.listener);
+      map.un("dblclick", handleDoubleClick);
+      map.un("singleclick", handleSingleClick);
     };
-  }, [
-    map,
-    tempFeature,
-    vectorSource,
-    isModifying,
-    clonedFeature,
-    modifyInteraction,
-  ]);
+  }, [map, tempFeature, vectorLayer]);
 
   return null;
 };

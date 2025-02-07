@@ -1,68 +1,59 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Map } from "ol";
 import VectorLayer from "ol/layer/Vector";
 import { ICoordinates } from "../../@types/type";
 import Select from "ol/interaction/Select";
-import { selectedStyle, selectDoubleClickStyle, style } from "../../libs/style";
-import TileLayer from "ol/layer/Tile";
 import { useTypeContext } from "../../context/TypeContext";
-import { set } from "ol/transform";
+import Feature from "ol/Feature";
+import { SimpleGeometry } from "ol/geom";
+import { click } from "ol/events/condition";
 
 const SelectInteractions = ({
   map,
   vectorLayer,
-  raster,
   setCoordinates,
   setIsSelected,
   setTempFeature,
 }: {
   map: Map | null;
   vectorLayer: VectorLayer | null;
-  raster: TileLayer | null;
   setCoordinates: (coordinates: ICoordinates) => void;
   setIsSelected: (isSelected: boolean) => void;
-  setTempFeature: (tempFeature: any) => void;
+  setTempFeature: (tempFeature: Feature | null) => void;
 }) => {
-  const { setEnableModify, setEnableDraw } = useTypeContext();
+  const { setEnableModify, setEnableDraw, setEnableSelect } = useTypeContext();
   useEffect(() => {
-    // Your code here
+    if (!map || !vectorLayer) return;
+
+    // const source = vectorLayer.getSource() as Source;
 
     const select = new Select({
-      layers: [vectorLayer as VectorLayer, raster as TileLayer],
+      layers: [vectorLayer],
+      condition: click,
       multi: false,
     });
 
-    map?.addInteraction(select);
+    map.addInteraction(select);
 
-    const listenerKey = select.on("select", (e) => {
-      const selectedFeatures = e.selected;
-
-      if (selectedFeatures.length > 0) {
-        const feature = selectedFeatures[0];
-
-        console.log(feature.getGeometry()?.getCoordinates());
-
-        feature.setStyle(selectedStyle);
-        setIsSelected(true);
-
-        setCoordinates(feature.getGeometry()?.getCoordinates());
-        setEnableModify(false);
-        setEnableDraw(false);
-        setTempFeature(feature);
-      } else {
-        setEnableModify(true);
-        setIsSelected(false);
-        setEnableDraw(true);
-        setTempFeature(null);
-        setCoordinates([]);
+    const listener = select.on("select", (e) => {
+      const feature = e.selected[0];
+      if (feature instanceof SimpleGeometry) {
+        setCoordinates(feature.getCoordinates() as ICoordinates);
       }
+      setIsSelected(true);
+      setTempFeature(new Feature(feature.getGeometry()));
+      setEnableModify(true);
+      setEnableDraw(false);
+      setEnableSelect(false);
+
+      console.log(vectorLayer.getSource()?.getFeatures().length);
     });
 
     return () => {
-      map?.removeInteraction(select);
-      select.un("select", listenerKey.listener);
+      map.removeInteraction(select);
+      select.un("select", listener.listener);
     };
-  }, [map, vectorLayer, raster]);
+  }, [map, vectorLayer]);
 
   return null;
 };
