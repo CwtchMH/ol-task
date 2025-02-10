@@ -6,6 +6,7 @@ import { useEffect, useRef } from "react";
 import Feature from "ol/Feature";
 import VectorSource from "ol/source/Vector";
 import { styleTranslate } from "../../libs/style";
+import { useCombinedContext } from "../../hooks/useCombinedContext";
 
 const TranslateInteractions = ({
   map,
@@ -16,6 +17,8 @@ const TranslateInteractions = ({
 }) => {
   const selectedFeatureRef = useRef<Feature | null>(null);
   const extraFeatureRef = useRef<Feature | null>(null);
+
+  const { setTranslateQuantity } = useCombinedContext();
 
   useEffect(() => {
     if (!map || !vectorLayer) return;
@@ -88,6 +91,7 @@ const TranslateInteractions = ({
         selectedFeatureRef.current = null;
         extraFeatureRef.current = null;
         select.getFeatures().clear();
+        setTranslateQuantity((prev) => prev + 1);
         alert("Done translating a feature");
       } else {
         console.log("Feature does not intersect at double click");

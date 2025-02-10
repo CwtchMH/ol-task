@@ -7,7 +7,7 @@ import { ICoordinates } from "../../@types/type";
 import VectorSource from "ol/source/Vector";
 import { styleModify } from "../../libs/style";
 import { SimpleGeometry } from "ol/geom";
-import { useTypeContext } from "../../context/TypeContext";
+import { useCombinedContext } from "../../hooks/useCombinedContext";
 
 const ModifyInteractions = ({
   map,
@@ -22,7 +22,8 @@ const ModifyInteractions = ({
 }) => {
   const modifiedFeatureRef = useRef<Feature | null>(null);
 
-  const { setEnableSelect, setEnableModify } = useTypeContext();
+  const { setEnableSelect, setEnableModify, setModifyQuantity } =
+    useCombinedContext();
 
   useEffect(() => {
     console.log("ModifyInteractions");
@@ -82,19 +83,6 @@ const ModifyInteractions = ({
         setEnableModify(false);
         return;
       }
-      // if (
-      //   modifiedFeatureRef.current
-      //     .getGeometry()
-      //     ?.intersectsCoordinate(featureAtClick)
-      // ) {
-      //   sourceModify.removeFeature(modifiedFeatureRef.current);
-      //   source.addFeature(modifiedFeatureRef.current);
-
-      //   map.removeInteraction(modify);
-      //   map.removeLayer(layerModify);
-      //   setEnableSelect(true);
-      //   modifiedFeatureRef.current = null;
-      // }
     };
 
     const handleDoubleClick = (e: MapBrowserEvent<UIEvent>) => {
@@ -118,6 +106,7 @@ const ModifyInteractions = ({
         setEnableSelect(true);
         modifiedFeatureRef.current = null;
         alert("Done modifying a feature");
+        setModifyQuantity((prev) => prev + 1);
       }
     };
 

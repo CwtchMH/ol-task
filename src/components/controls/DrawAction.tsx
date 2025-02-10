@@ -2,13 +2,19 @@ import { useEffect } from "react";
 import { useTypeContext } from "../../context/TypeContext";
 
 export const DrawAction = () => {
-  const { enableDraw, setEnableDraw, setEnableModify, setEnableSelect } =
-    useTypeContext();
+  const {
+    enableDraw,
+    setEnableDraw,
+    setEnableModify,
+    setEnableSelect,
+    setEnableTranslate,
+  } = useTypeContext();
 
   const handleClick = () => {
     setEnableDraw(true);
     setEnableModify(false);
     setEnableSelect(false);
+    setEnableTranslate(false);
   };
 
   useEffect(() => {

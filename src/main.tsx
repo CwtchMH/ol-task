@@ -3,11 +3,14 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
 import { TypeProvider } from "./context/TypeContext.tsx";
+import { DataProvider } from "./context/DataProvider.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <TypeProvider>
-      <App />
+      <DataProvider>
+        <App />
+      </DataProvider>
     </TypeProvider>
   </StrictMode>,
 );

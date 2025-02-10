@@ -7,6 +7,7 @@ import Draw from "ol/interaction/Draw";
 import { ICoordinates } from "../../@types/type";
 import { styleDraw } from "../../libs/style";
 import { SimpleGeometry } from "ol/geom";
+import { useCombinedContext } from "../../hooks/useCombinedContext";
 
 const DrawInteractions = ({
   map,
@@ -23,6 +24,8 @@ const DrawInteractions = ({
 
   const [isDrawing, setIsDrawing] = useState(true);
   const [draw, setDraw] = useState<Draw | null>(null);
+
+  const { setDrawQuantity, setFeatureQuantity } = useCombinedContext();
 
   useEffect(() => {
     // if (geometryType === "None") return;
@@ -53,6 +56,7 @@ const DrawInteractions = ({
     const listenerKeyEnd = draw.on("drawend", (e) => {
       document.body.style.cursor = "default";
       featureRef.current = e.feature;
+      setDrawQuantity((prev) => prev + 1);
       const feature = e.feature;
       if (feature instanceof SimpleGeometry) {
         setCoordinates(feature.getCoordinates() as ICoordinates);
@@ -89,6 +93,7 @@ const DrawInteractions = ({
           sourceDraw.clear();
           document.body.style.cursor = "default";
           console.log(source.getFeatures().length);
+          setFeatureQuantity((prev) => prev + 1);
           alert("Done drawing a feature");
           setIsDrawing(false);
         }

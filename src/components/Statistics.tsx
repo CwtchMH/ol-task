@@ -1,15 +1,14 @@
 import { useCombinedContext } from "../hooks/useCombinedContext";
 
-const handleSumInteractions = (
-  featureQuantity: number,
+export const handleSumInteractions = (
   modifyQuantity: number,
   drawQuantity: number,
   translateQuantity: number,
 ) => {
-  return featureQuantity + modifyQuantity + drawQuantity + translateQuantity;
+  return modifyQuantity + drawQuantity + translateQuantity;
 };
 
-const handleMinInteraction = (
+export const handleMinInteraction = (
   featureQuantity: number,
   modifyQuantity: number,
   drawQuantity: number,
@@ -23,7 +22,7 @@ const handleMinInteraction = (
   );
 };
 
-const handleMaxInteraction = (
+export const handleMaxInteraction = (
   featureQuantity: number,
   modifyQuantity: number,
   drawQuantity: number,
@@ -45,7 +44,6 @@ export const Statistics = () => {
     featureQuantity,
     modifyQuantity,
     drawQuantity,
-    translateQuantity,
   );
   const min = handleMinInteraction(
     featureQuantity,
@@ -71,10 +69,4 @@ export const Statistics = () => {
       <p>Translate Quantity: {translateQuantity}</p>
     </div>
   );
-};
-
-export default {
-  handleMaxInteraction,
-  handleMinInteraction,
-  handleSumInteractions,
 };

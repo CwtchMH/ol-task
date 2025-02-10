@@ -8,12 +8,14 @@ export const ModifyAction = () => {
     setEnableDraw,
     setEnableModify,
     setEnableSelect,
+    setEnableTranslate,
   } = useTypeContext();
 
   const handleClick = () => {
     setEnableModify(false);
     setEnableDraw(false);
     setEnableSelect(true);
+    setEnableTranslate(false);
   };
 
   useEffect(() => {
