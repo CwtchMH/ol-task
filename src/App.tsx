@@ -1,12 +1,16 @@
 import "./App.css";
 import MapWrapper from "./components/MapWrapper";
-import { ToolBar } from "./components/toolbar";
+import { Statistics } from "./components/Statistics";
+import { ToolBar } from "./components/ToolBar";
 
 function App() {
   return (
     <div id="main-div" className="flex flex-row w-full h-full">
       <ToolBar />
-      <MapWrapper />
+      <div className="flex flex-col w-full h-full">
+        <Statistics />
+        <MapWrapper />
+      </div>
     </div>
   );
 }

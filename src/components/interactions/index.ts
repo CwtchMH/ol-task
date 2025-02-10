@@ -1,4 +1,4 @@
-export { default as DrawInteractions } from "./DrawInteractions";
-export { default as ModifyInteractions } from "./ModifyInteractions";
-export { default as SelectInteractions } from "./SelectInteractions";
-export { default as TranslateInteractions } from "./TranslateInteractions";
+export { default as DrawInteractions } from "./drawInteraction";
+export { default as ModifyInteractions } from "./modifyInteraction";
+export { default as SelectInteractions } from "./selectInteraction";
+export { default as TranslateInteractions } from "./translateInteraction";
