@@ -3,20 +3,16 @@ import Modify from "ol/interaction/Modify";
 import { Collection, Feature, MapBrowserEvent } from "ol";
 import { Map } from "ol";
 import VectorLayer from "ol/layer/Vector";
-import { ICoordinates } from "../../@types/type";
 import VectorSource from "ol/source/Vector";
 import { styleModify } from "../../libs/style";
-import { SimpleGeometry } from "ol/geom";
 import { useCombinedContext } from "../../hooks/useCombinedContext";
 
 const ModifyInteractions = ({
   map,
-  setCoordinates,
   tempFeature,
   vectorLayer,
 }: {
   map: Map | null;
-  setCoordinates: (coordinates: ICoordinates) => void;
   tempFeature: Feature | null;
   vectorLayer: VectorLayer | null;
 }) => {
@@ -55,14 +51,15 @@ const ModifyInteractions = ({
 
     map.addInteraction(modify);
 
+    const modifyStartListener = modify.on("modifystart", () => {
+      document.body.style.cursor = "pointer";
+      console.log("Start modifying a feature");
+    });
+
     const modifyEndListener = modify.on("modifyend", (e) => {
+      document.body.style.cursor = "default";
       const modifiedFeature = e.features.getArray()[0];
       modifiedFeatureRef.current = modifiedFeature;
-      if (modifiedFeature instanceof SimpleGeometry) {
-        setCoordinates(
-          modifiedFeature.getGeometry()?.get("Coordinates") as ICoordinates,
-        );
-      }
     });
 
     const handleSingleClick = (e: MapBrowserEvent<UIEvent>) => {
@@ -120,6 +117,7 @@ const ModifyInteractions = ({
       if (layerModify) {
         map.removeLayer(layerModify);
       }
+      modify.un("modifystart", modifyStartListener.listener);
       modify.un("modifyend", modifyEndListener.listener);
       map.un("dblclick", handleDoubleClick);
       map.un("singleclick", handleSingleClick);

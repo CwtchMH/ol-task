@@ -74,18 +74,53 @@ const TranslateInteractions = ({
       }
     };
 
+    // Hàm xử lý double click
     const handleDblClick = (e: MapBrowserEvent<UIEvent>) => {
-      const featureAtDblClick = e.coordinate;
+      const clickCoordinate = e.coordinate;
+      const clickPixel = e.pixel;
+      const hitTolerancePixel = 5; // Điều chỉnh theo nhu cầu (pixel)
 
-      if (!selectedFeatureRef.current) {
-        return;
+      const featureAtPixel = map.forEachFeatureAtPixel(
+        clickPixel,
+        (feature) => feature,
+        { hitTolerance: hitTolerancePixel },
+      );
+
+      if (!selectedFeatureRef.current) return;
+
+      const geometry = selectedFeatureRef.current.getGeometry();
+      if (!geometry) return;
+
+      let isHit = false;
+
+      // Xác định loại geometry để áp dụng cách hit test phù hợp
+      switch (geometry.getType()) {
+        case "Polygon":
+        case "MultiPolygon":
+          // Với Polygon, dùng phương thức intersectsCoordinate
+          isHit = geometry.intersectsCoordinate(clickCoordinate);
+          break;
+
+        case "Point":
+        case "MultiPoint":
+        case "LineString":
+        case "MultiLineString":
+          // Với Point và LineString, sử dụng hit test dựa trên pixel
+          // Lưu ý: hit test sẽ duyệt qua tất cả feature tại vị trí clickPixel trên map
+          // Nếu feature tại pixel khớp với selectedFeature, ta xem là nhấn trúng
+          isHit = featureAtPixel === selectedFeatureRef.current;
+          break;
+
+        default:
+          // Nếu geometry khác, cố gắng sử dụng intersectsCoordinate nếu có
+          if (typeof geometry.intersectsCoordinate === "function") {
+            isHit = geometry.intersectsCoordinate(clickCoordinate);
+          }
+          break;
       }
 
-      if (
-        selectedFeatureRef.current
-          .getGeometry()
-          ?.intersectsCoordinate(featureAtDblClick)
-      ) {
+      if (isHit) {
+        // Khi hit test thành công
         vectorLayer?.getSource()?.addFeature(selectedFeatureRef.current);
         sourceTranslate.clear();
         selectedFeatureRef.current = null;
@@ -94,6 +129,7 @@ const TranslateInteractions = ({
         setTranslateQuantity((prev) => prev + 1);
         alert("Done translating a feature");
       } else {
+        // Khi không hit test được feature
         console.log("Feature does not intersect at double click");
         vectorLayer?.getSource()?.addFeature(extraFeatureRef.current);
         sourceTranslate.clear();

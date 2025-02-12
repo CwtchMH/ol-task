@@ -9,6 +9,8 @@ export interface IType {
   setEnableSelect: React.Dispatch<React.SetStateAction<boolean>>;
   enableTranslate: boolean;
   setEnableTranslate: React.Dispatch<React.SetStateAction<boolean>>;
+  typeGeometry: string;
+  setTypeGeometry: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export interface IData {

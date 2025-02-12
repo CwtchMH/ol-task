@@ -8,6 +8,7 @@ export const TypeProvider = ({ children }: { children: React.ReactNode }) => {
   const [enableDraw, setEnableDraw] = React.useState(false);
   const [enableSelect, setEnableSelect] = React.useState(false);
   const [enableTranslate, setEnableTranslate] = React.useState(false);
+  const [typeGeometry, setTypeGeometry] = React.useState<string>("Polygon");
 
   return (
     <TypeContext.Provider
@@ -20,6 +21,8 @@ export const TypeProvider = ({ children }: { children: React.ReactNode }) => {
         setEnableSelect,
         enableTranslate,
         setEnableTranslate,
+        typeGeometry,
+        setTypeGeometry,
       }}
     >
       {children}

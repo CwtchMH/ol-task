@@ -1,34 +1,30 @@
 import VectorLayer from "ol/layer/Vector";
-import { Feature, Map, MapBrowserEvent } from "ol";
+import { Feature, Map } from "ol";
 import { useEffect, useRef, useState } from "react";
 import VectorSource from "ol/source/Vector";
 import { Type } from "ol/geom/Geometry";
 import Draw from "ol/interaction/Draw";
-import { ICoordinates } from "../../@types/type";
 import { styleDraw } from "../../libs/style";
-import { SimpleGeometry } from "ol/geom";
 import { useCombinedContext } from "../../hooks/useCombinedContext";
+import { drawDblClick } from "../../utils/drawDblClick";
 
-const DrawInteractions = ({
+export const DrawInteractions = ({
   map,
   vectorLayer,
   geometryType,
-  setCoordinates,
 }: {
   map: Map | null;
   vectorLayer: VectorLayer | null;
   geometryType: string;
-  setCoordinates: (coordinates: ICoordinates) => void;
 }) => {
   const featureRef = useRef<Feature | null>(null);
 
   const [isDrawing, setIsDrawing] = useState(true);
   const [draw, setDraw] = useState<Draw | null>(null);
 
-  const { setDrawQuantity, setFeatureQuantity } = useCombinedContext();
+  const { setDrawQuantity } = useCombinedContext();
 
   useEffect(() => {
-    // if (geometryType === "None") return;
     const source = vectorLayer?.getSource() as VectorSource;
 
     const sourceDraw = new VectorSource({ wrapX: false });
@@ -51,54 +47,29 @@ const DrawInteractions = ({
 
     const listenerKeyStart = draw.on("drawstart", () => {
       document.body.style.cursor = "crosshair";
+      console.log(sourceDraw.getFeatures().length);
+      console.log(source.getFeatures().length);
     });
 
     const listenerKeyEnd = draw.on("drawend", (e) => {
       document.body.style.cursor = "default";
       featureRef.current = e.feature;
-      setDrawQuantity((prev) => prev + 1);
-      const feature = e.feature;
-      if (feature instanceof SimpleGeometry) {
-        setCoordinates(feature.getCoordinates() as ICoordinates);
+      if (!sourceDraw.hasFeature(e.feature)) {
+        console.log("Adding feature to sourceDraw");
+        sourceDraw.addFeature(e.feature.clone());
       }
+      setDrawQuantity((prev) => prev + 1);
     });
 
     const handleSingleClick = () => {
       setIsDrawing(true);
     };
 
-    const handleDblClick = (e: MapBrowserEvent<UIEvent>) => {
-      const featureAtDblClick = e.coordinate;
-
-      sourceDraw.clear();
-
-      console.log(
-        featureRef.current
-          ?.getGeometry()
-          ?.intersectsCoordinate(featureAtDblClick),
-      );
-
-      if (
-        featureRef.current
-          ?.getGeometry()
-          ?.intersectsCoordinate(featureAtDblClick)
-      ) {
-        if (
-          !source.hasFeature(featureRef.current) &&
-          featureRef.current !== null
-        ) {
-          const feature = featureRef.current;
-          source.addFeature(feature.clone());
-          featureRef.current = null;
-          sourceDraw.clear();
-          document.body.style.cursor = "default";
-          console.log(source.getFeatures().length);
-          setFeatureQuantity((prev) => prev + 1);
-          alert("Done drawing a feature");
-          setIsDrawing(false);
-        }
-      }
-    };
+    const handleDblClick = drawDblClick({
+      source,
+      sourceDraw,
+      setIsDrawing,
+    });
 
     map?.on("dblclick", handleDblClick);
     map?.on("singleclick", handleSingleClick);

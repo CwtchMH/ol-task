@@ -4,25 +4,22 @@ import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import { Map, View } from "ol";
 import VectorSource from "ol/source/Vector";
-import { CoordinatesDisplay } from "../informations";
 import {
   DrawInteractions,
   SelectInteractions,
   TranslateInteractions,
 } from "./interactions";
-import { ICoordinates } from "../@types/type";
-import { useTypeContext } from "../context/TypeContext";
 import { ModifyInteractions } from "./interactions";
 import Feature from "ol/Feature";
 import { styleOrigin } from "../libs/style";
+import { useCombinedContext } from "../hooks/useCombinedContext";
 
 export const MapWrapper = () => {
-  const { enableDraw, enableSelect, enableTranslate } = useTypeContext();
+  const { enableDraw, enableSelect, enableTranslate, typeGeometry } =
+    useCombinedContext();
 
   const [map, setMap] = useState<Map | null>(null);
   const [vectorLayer, setVectorLayer] = useState<VectorLayer | null>(null);
-  const [geometryType, setGeometryType] = useState<string>("");
-  const [coordinates, setCoordinates] = useState<ICoordinates>([]);
   const [isSelected, setIsSelected] = useState<boolean>(false);
   const [tempFeature, setTempFeature] = useState<Feature | null>(null);
 
@@ -33,7 +30,6 @@ export const MapWrapper = () => {
 
   useEffect(() => {
     if (mapElement.current) {
-      setGeometryType("Polygon");
       const raster = new TileLayer({
         source: new OSM(),
       });
@@ -73,25 +69,17 @@ export const MapWrapper = () => {
   return (
     <div className="w-full">
       <div ref={mapElement} id="map" className="h-[100vh] w-auto"></div>
-      {/* <GeometryType setGeometryType={setGeometryType} /> */}
       {map && vectorLayer && enableDraw && (
         <DrawInteractions
           map={map}
           vectorLayer={vectorLayer}
-          geometryType={geometryType}
-          setCoordinates={setCoordinates}
+          geometryType={typeGeometry}
         />
       )}
-      {geometryType !== "Circle" &&
-        coordinates !== null &&
-        coordinates.length > 0 && (
-          <CoordinatesDisplay coordinates={coordinates} />
-        )}
       {map && vectorLayer && enableSelect && !enableTranslate && (
         <SelectInteractions
           map={map}
           vectorLayer={vectorLayer}
-          setCoordinates={setCoordinates}
           setIsSelected={setIsSelected}
           setTempFeature={setTempFeature}
         />
@@ -99,7 +87,6 @@ export const MapWrapper = () => {
       {map && vectorLayer && isSelected && (
         <ModifyInteractions
           map={map}
-          setCoordinates={setCoordinates}
           tempFeature={tempFeature}
           vectorLayer={vectorLayer}
         />

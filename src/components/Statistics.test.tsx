@@ -3,7 +3,6 @@ import {
   handleMaxInteraction,
   handleSumInteractions,
 } from "./Statistics";
-import { describe, expect, it } from "@jest/globals";
 
 describe("Statistics", () => {
   it("should return the sum of interactions", () => {

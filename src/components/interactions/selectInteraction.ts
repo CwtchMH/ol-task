@@ -1,23 +1,19 @@
 import { useEffect } from "react";
 import { Map } from "ol";
 import VectorLayer from "ol/layer/Vector";
-import { ICoordinates } from "../../@types/type";
 import Select from "ol/interaction/Select";
 import { useTypeContext } from "../../context/TypeContext";
 import Feature from "ol/Feature";
-import { SimpleGeometry } from "ol/geom";
 import { click } from "ol/events/condition";
 
 const SelectInteractions = ({
   map,
   vectorLayer,
-  setCoordinates,
   setIsSelected,
   setTempFeature,
 }: {
   map: Map | null;
   vectorLayer: VectorLayer | null;
-  setCoordinates: (coordinates: ICoordinates) => void;
   setIsSelected: (isSelected: boolean) => void;
   setTempFeature: (tempFeature: Feature | null) => void;
 }) => {
@@ -37,9 +33,6 @@ const SelectInteractions = ({
 
     const listener = select.on("select", (e) => {
       const feature = e.selected[0];
-      if (feature instanceof SimpleGeometry) {
-        setCoordinates(feature.getCoordinates() as ICoordinates);
-      }
       setIsSelected(true);
       setTempFeature(new Feature(feature.getGeometry()));
       setEnableModify(true);
