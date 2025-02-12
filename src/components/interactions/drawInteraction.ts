@@ -46,23 +46,21 @@ export const DrawInteractions = ({
     map?.addInteraction(draw);
 
     const listenerKeyStart = draw.on("drawstart", () => {
+      console.log("Start drawing");
       document.body.style.cursor = "crosshair";
-      console.log(sourceDraw.getFeatures().length);
-      console.log(source.getFeatures().length);
     });
 
     const listenerKeyEnd = draw.on("drawend", (e) => {
       document.body.style.cursor = "default";
       featureRef.current = e.feature;
-      if (!sourceDraw.hasFeature(e.feature)) {
-        console.log("Adding feature to sourceDraw");
-        sourceDraw.addFeature(e.feature.clone());
-      }
       setDrawQuantity((prev) => prev + 1);
+      setIsDrawing(false);
     });
 
     const handleSingleClick = () => {
-      setIsDrawing(true);
+      if (!isDrawing) {
+        setIsDrawing(true);
+      }
     };
 
     const handleDblClick = drawDblClick({

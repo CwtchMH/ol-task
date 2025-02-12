@@ -1,38 +1,44 @@
 import VectorSource from "ol/source/Vector";
 import { drawDblClick } from "./drawDblClick";
-import { Feature, MapBrowserEvent } from "ol";
+import { Feature } from "ol";
 import { vi } from "vitest";
+import Polygon from "ol/geom/Polygon";
+import Point from "ol/geom/Point";
+import LineString from "ol/geom/LineString";
 
 describe("drawDblClick test", () => {
-  let source: VectorSource = new VectorSource();
-  let sourceDraw: VectorSource = new VectorSource();
-  let featureRef: { current: Feature | null };
+  let source: VectorSource;
+  let sourceDraw: VectorSource;
   let setIsDrawing: (isDrawing: boolean) => void;
+  let addFeatureSpy: ReturnType<typeof vi.spyOn>;
+  let clearSpy: ReturnType<typeof vi.spyOn>;
+  let alertSpy: ReturnType<typeof vi.spyOn>;
 
-  const addFeatureSpy = vi.spyOn(source, "addFeature");
-  const hasFeatureSpy = vi.spyOn(source, "hasFeature");
-  const clearSpy = vi.spyOn(sourceDraw, "clear");
-  const alertSpy = vi.spyOn(window, "alert");
+  let featuresArray: Feature[];
 
   beforeEach(() => {
     source = new VectorSource();
     sourceDraw = new VectorSource();
-    featureRef = { current: new Feature() };
     setIsDrawing = vi.fn();
+
+    clearSpy = vi.spyOn(sourceDraw, "clear").mockImplementation(() => {
+      featuresArray = [];
+    });
+
+    addFeatureSpy = vi.spyOn(source, "addFeatures");
+    alertSpy = vi.spyOn(window, "alert");
   });
 
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  it("should add a new feature to source on double click", () => {
-    // featureRef.current!.getGeometry = vi.fn().mockReturnValue({
-    //   intersectsCoordinate: vi.fn().mockReturnValue(true),
-    // });
+  it("should add features to source on double click", () => {
+    featuresArray = [new Feature()];
 
-    hasFeatureSpy.mockReturnValue(false);
+    vi.spyOn(sourceDraw, "getFeatures").mockImplementation(() => featuresArray);
 
-    expect(source.getFeatures().length).toBe(0);
+    expect(sourceDraw.getFeatures().length).toBeGreaterThan(0);
 
     const handler = drawDblClick({
       source,
@@ -41,7 +47,40 @@ describe("drawDblClick test", () => {
     });
     handler();
 
-    expect(clearSpy).toHaveBeenCalledTimes(2);
+    expect(clearSpy).toHaveBeenCalledTimes(1);
+    expect(source.getFeatures().length).toBeGreaterThan(0);
+    expect(sourceDraw.getFeatures().length).toBe(0);
+    expect(addFeatureSpy).toHaveBeenCalled();
+    expect(document.body.style.cursor).toBe("default");
+    expect(alertSpy).toHaveBeenCalledWith("Done drawing a feature");
+    expect(setIsDrawing).toHaveBeenCalledWith(false);
+  });
+
+  it("should exist polygon in source when double click", () => {
+    featuresArray = [
+      new Feature(
+        new Polygon([
+          [
+            [0, 0],
+            [1, 0],
+            [1, 1],
+            [0, 1],
+            [0, 0],
+          ],
+        ]),
+      ),
+    ];
+    vi.spyOn(sourceDraw, "getFeatures").mockImplementation(() => featuresArray);
+
+    expect(sourceDraw.getFeatures().length).toBeGreaterThan(0);
+    const handler = drawDblClick({
+      source,
+      sourceDraw,
+      setIsDrawing,
+    });
+    handler();
+
+    expect(clearSpy).toHaveBeenCalledTimes(1);
     expect(source.getFeatures().length).toBe(1);
     expect(sourceDraw.getFeatures().length).toBe(0);
     expect(addFeatureSpy).toHaveBeenCalled();
@@ -50,48 +89,76 @@ describe("drawDblClick test", () => {
     expect(setIsDrawing).toHaveBeenCalledWith(false);
   });
 
-  //   it("should not add a feature if it already exists in source", () => {
-  //     const mockEvent = {
-  //       coordinate: [0, 0],
-  //     } as unknown as MapBrowserEvent<UIEvent>;
+  it("should exist point in source when double click", () => {
+    featuresArray = [new Feature(new Point([0, 0]))];
+    vi.spyOn(sourceDraw, "getFeatures").mockImplementation(() => featuresArray);
 
-  //     featureRef.current!.getGeometry = vi.fn().mockReturnValue({
-  //       intersectsCoordinate: vi.fn().mockReturnValue(true),
-  //     });
-
-  //     hasFeatureSpy.mockReturnValue(true);
-
-  //     const handler = drawDblClick({
-  //       source,
-  //       sourceDraw,
-  //       featureRef,
-  //       setIsDrawing,
-  //     });
-  //     handler(mockEvent);
-
-  //     expect(addFeatureSpy).not.toHaveBeenCalled();
-  //     expect(alertSpy).not.toHaveBeenCalled();
-  //     expect(setIsDrawing).not.toHaveBeenCalled();
-  //   });
-
-  it("should not add a feature if featureRef.current is null", () => {
-    const mockEvent = {
-      coordinate: [0, 0],
-    } as unknown as MapBrowserEvent<UIEvent>;
-
-    featureRef.current = null;
-
+    expect(sourceDraw.getFeatures().length).toBeGreaterThan(0);
     const handler = drawDblClick({
       source,
       sourceDraw,
-      featureRef,
       setIsDrawing,
     });
-    handler(mockEvent);
+    handler();
 
+    expect(clearSpy).toHaveBeenCalledTimes(1);
+    expect(source.getFeatures().length).toBe(1);
     expect(sourceDraw.getFeatures().length).toBe(0);
-    expect(addFeatureSpy).not.toHaveBeenCalled();
-    expect(alertSpy).not.toHaveBeenCalled();
-    expect(setIsDrawing).not.toHaveBeenCalled();
+    expect(addFeatureSpy).toHaveBeenCalled();
+    expect(document.body.style.cursor).toBe("default");
+    expect(alertSpy).toHaveBeenCalledWith("Done drawing a feature");
+    expect(setIsDrawing).toHaveBeenCalledWith(false);
+  });
+
+  it("should exist linestring in source when double click", () => {
+    featuresArray = [
+      new Feature(
+        new LineString([
+          [0, 0],
+          [1, 0],
+        ]),
+      ),
+    ];
+    vi.spyOn(sourceDraw, "getFeatures").mockImplementation(() => featuresArray);
+
+    expect(sourceDraw.getFeatures().length).toBeGreaterThan(0);
+    const handler = drawDblClick({
+      source,
+      sourceDraw,
+      setIsDrawing,
+    });
+    handler();
+
+    expect(clearSpy).toHaveBeenCalledTimes(1);
+    expect(source.getFeatures().length).toBe(1);
+    expect(sourceDraw.getFeatures().length).toBe(0);
+    expect(addFeatureSpy).toHaveBeenCalled();
+    expect(document.body.style.cursor).toBe("default");
+    expect(alertSpy).toHaveBeenCalledWith("Done drawing a feature");
+    expect(setIsDrawing).toHaveBeenCalledWith(false);
+  });
+
+  it("should exist 2 features in source when double click after drawing 2 features", () => {
+    featuresArray = [
+      new Feature(new Point([0, 0])),
+      new Feature(new Point([1, 1])),
+    ];
+    vi.spyOn(sourceDraw, "getFeatures").mockImplementation(() => featuresArray);
+
+    expect(sourceDraw.getFeatures().length).toBeGreaterThan(0);
+    const handler = drawDblClick({
+      source,
+      sourceDraw,
+      setIsDrawing,
+    });
+    handler();
+
+    expect(clearSpy).toHaveBeenCalledTimes(1);
+    expect(source.getFeatures().length).toBe(2);
+    expect(sourceDraw.getFeatures().length).toBe(0);
+    expect(addFeatureSpy).toHaveBeenCalled();
+    expect(document.body.style.cursor).toBe("default");
+    expect(alertSpy).toHaveBeenCalledWith("Done drawing a feature");
+    expect(setIsDrawing).toHaveBeenCalledWith(false);
   });
 });
