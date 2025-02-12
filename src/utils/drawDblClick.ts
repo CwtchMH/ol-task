@@ -7,7 +7,7 @@ export const drawDblClick = ({
 }: {
   source: VectorSource;
   sourceDraw: VectorSource;
-  setIsDrawing: (isDrawing: boolean) => void;
+  setIsDrawing: (value: boolean) => void;
 }) => {
   return () => {
     //sourceDraw.clear();

@@ -1,6 +1,6 @@
 import VectorLayer from "ol/layer/Vector";
 import { Feature, Map } from "ol";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import VectorSource from "ol/source/Vector";
 import { Type } from "ol/geom/Geometry";
 import Draw from "ol/interaction/Draw";
@@ -19,8 +19,11 @@ export const DrawInteractions = ({
 }) => {
   const featureRef = useRef<Feature | null>(null);
 
-  const [isDrawing, setIsDrawing] = useState(true);
-  const [draw, setDraw] = useState<Draw | null>(null);
+  const isDrawingRef = useRef<boolean>(false);
+
+  const updateIsDrawing = (value: boolean) => {
+    isDrawingRef.current = value;
+  };
 
   const { setDrawQuantity } = useCombinedContext();
 
@@ -41,8 +44,6 @@ export const DrawInteractions = ({
       type: geometryType as Type,
     });
 
-    setDraw(draw);
-
     map?.addInteraction(draw);
 
     const listenerKeyStart = draw.on("drawstart", () => {
@@ -54,19 +55,22 @@ export const DrawInteractions = ({
       document.body.style.cursor = "default";
       featureRef.current = e.feature;
       setDrawQuantity((prev) => prev + 1);
-      setIsDrawing(false);
+      draw.setActive(false);
     });
 
     const handleSingleClick = () => {
-      if (!isDrawing) {
-        setIsDrawing(true);
+      console.log("single click");
+      if (!isDrawingRef.current) {
+        console.log("drawing ne");
+        draw.setActive(true);
+        updateIsDrawing(true);
       }
     };
 
     const handleDblClick = drawDblClick({
       source,
       sourceDraw,
-      setIsDrawing,
+      setIsDrawing: updateIsDrawing,
     });
 
     map?.on("dblclick", handleDblClick);
@@ -82,16 +86,6 @@ export const DrawInteractions = ({
       map?.un("singleclick", handleSingleClick);
     };
   }, [map, vectorLayer, geometryType]);
-
-  useEffect(() => {
-    if (isDrawing) {
-      console.log("Drawing");
-      draw?.setActive(true);
-    } else {
-      console.log("Not drawing");
-      draw?.setActive(false);
-    }
-  }, [isDrawing]);
 
   return null;
 };
