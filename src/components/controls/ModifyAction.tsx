@@ -9,6 +9,7 @@ export const ModifyAction = () => {
     setEnableModify,
     setEnableSelect,
     setEnableTranslate,
+    setTypeInteraction,
   } = useTypeContext();
 
   const handleClick = () => {
@@ -16,17 +17,15 @@ export const ModifyAction = () => {
     setEnableDraw(false);
     setEnableSelect(true);
     setEnableTranslate(false);
+    setTypeInteraction("Modify");
   };
 
   useEffect(() => {
-    if (enableSelect || enableModify) {
-      console.log("Modify or Select action enabled");
-      if (enableModify) {
-        console.log("Modify action enabled");
-      }
-      if (enableSelect) {
-        console.log("Select action enabled");
-      }
+    if (enableModify) {
+      console.log("Modify action enabled");
+    }
+    if (enableSelect) {
+      console.log("Select action enabled");
     }
   }, [enableModify, enableSelect]);
 

@@ -1,9 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import { OSM } from "ol/source";
-import TileLayer from "ol/layer/Tile";
-import VectorLayer from "ol/layer/Vector";
-import { Map, View } from "ol";
-import VectorSource from "ol/source/Vector";
+import { useEffect, useState } from "react";
 import {
   DrawInteractions,
   SelectInteractions,
@@ -11,54 +6,23 @@ import {
 } from "./interactions";
 import { ModifyInteractions } from "./interactions";
 import Feature from "ol/Feature";
-import { styleOrigin } from "../libs/style";
 import { useCombinedContext } from "../hooks/useCombinedContext";
 
 export const MapWrapper = () => {
-  const { enableDraw, enableSelect, enableTranslate, typeGeometry } =
-    useCombinedContext();
+  const {
+    enableDraw,
+    enableSelect,
+    enableTranslate,
+    typeGeometry,
+    map,
+    vectorLayer,
+    mapRef,
+    typeInteraction,
+    isSelected,
+    setIsSelected,
+  } = useCombinedContext();
 
-  const [map, setMap] = useState<Map | null>(null);
-  const [vectorLayer, setVectorLayer] = useState<VectorLayer | null>(null);
-  const [isSelected, setIsSelected] = useState<boolean>(false);
   const [tempFeature, setTempFeature] = useState<Feature | null>(null);
-
-  const mapElement = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<Map | null>(null);
-
-  mapRef.current = map;
-
-  useEffect(() => {
-    if (mapElement.current) {
-      const raster = new TileLayer({
-        source: new OSM(),
-      });
-
-      const source = new VectorSource({ wrapX: false });
-
-      const vector = new VectorLayer({
-        source: source,
-        style: styleOrigin,
-      });
-
-      const initialMap = new Map({
-        layers: [raster, vector],
-        target: mapElement.current,
-        view: new View({
-          center: [0, 0],
-          zoom: 2,
-        }),
-      });
-
-      setMap(initialMap);
-      setVectorLayer(vector);
-
-      return () => {
-        setMap(null);
-        initialMap.setTarget("null");
-      };
-    }
-  }, []);
 
   useEffect(() => {
     if (tempFeature) {
@@ -68,7 +32,11 @@ export const MapWrapper = () => {
 
   return (
     <div className="w-full">
-      <div ref={mapElement} id="map" className="h-[100vh] w-auto"></div>
+      <div
+        id="map"
+        ref={mapRef}
+        style={{ height: "100vh", width: "auto" }}
+      ></div>
       {map && vectorLayer && enableDraw && (
         <DrawInteractions
           map={map}
@@ -80,19 +48,24 @@ export const MapWrapper = () => {
         <SelectInteractions
           map={map}
           vectorLayer={vectorLayer}
-          setIsSelected={setIsSelected}
           setTempFeature={setTempFeature}
         />
       )}
-      {map && vectorLayer && isSelected && (
+      {map && vectorLayer && isSelected && typeInteraction === "Modify" && (
         <ModifyInteractions
           map={map}
           tempFeature={tempFeature}
           vectorLayer={vectorLayer}
+          setIsSelected={setIsSelected}
         />
       )}
-      {map && vectorLayer && enableTranslate && (
-        <TranslateInteractions map={map} vectorLayer={vectorLayer} />
+      {map && vectorLayer && isSelected && typeInteraction === "Translate" && (
+        <TranslateInteractions
+          map={map}
+          vectorLayer={vectorLayer}
+          tempFeature={tempFeature}
+          //setIsSelected={setIsSelected}
+        />
       )}
     </div>
   );

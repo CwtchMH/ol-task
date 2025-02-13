@@ -11,6 +11,10 @@ export interface IType {
   setEnableTranslate: React.Dispatch<React.SetStateAction<boolean>>;
   typeGeometry: string;
   setTypeGeometry: React.Dispatch<React.SetStateAction<string>>;
+  typeInteraction: string;
+  setTypeInteraction: React.Dispatch<React.SetStateAction<string>>;
+  isSelected: boolean;
+  setIsSelected: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface IData {

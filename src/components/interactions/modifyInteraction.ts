@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import Modify from "ol/interaction/Modify";
-import { Collection, Feature, MapBrowserEvent } from "ol";
+import { Collection, Feature } from "ol";
 import { Map } from "ol";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
@@ -11,15 +11,16 @@ const ModifyInteractions = ({
   map,
   tempFeature,
   vectorLayer,
+  setIsSelected,
 }: {
   map: Map | null;
   tempFeature: Feature | null;
   vectorLayer: VectorLayer | null;
+  setIsSelected: (isSelected: boolean) => void;
 }) => {
   const modifiedFeatureRef = useRef<Feature | null>(null);
 
-  const { setEnableSelect, setEnableModify, setModifyQuantity } =
-    useCombinedContext();
+  const { setEnableSelect, setEnableModify } = useCombinedContext();
 
   useEffect(() => {
     console.log("ModifyInteractions");
@@ -27,9 +28,6 @@ const ModifyInteractions = ({
 
     const source = vectorLayer.getSource() as VectorSource;
 
-    //console.log(source.getFeatures().length);
-
-    // Tạo một layer riêng để modify
     const sourceModify = new VectorSource();
     const layerModify = new VectorLayer({
       source: sourceModify,
@@ -38,16 +36,23 @@ const ModifyInteractions = ({
 
     map.addLayer(layerModify);
 
-    source.removeFeature(tempFeature);
-    sourceModify.addFeature(tempFeature);
+    for (const feature of source.getFeatures()) {
+      const geom = feature.getGeometry();
+      if (geom && tempFeature?.getGeometry() === geom) {
+        source.removeFeature(feature);
+      }
+    }
 
-    // console.log(source.getFeatures().length);
-    // console.log(sourceModify.getFeatures().length);
+    const he = tempFeature.clone();
+
+    sourceModify.addFeature(he);
 
     const modify = new Modify({
-      source: sourceModify,
-      features: new Collection([tempFeature]),
+      //source: sourceModify,
+      features: new Collection([he]),
     });
+
+    console.log(source.getFeatures().length);
 
     map.addInteraction(modify);
 
@@ -62,55 +67,27 @@ const ModifyInteractions = ({
       modifiedFeatureRef.current = modifiedFeature;
     });
 
-    const handleSingleClick = (e: MapBrowserEvent<UIEvent>) => {
-      const featureAtClick = e.coordinate;
-
-      if (!modifiedFeatureRef.current) {
-        setEnableSelect(true);
-        setEnableModify(false);
-        return;
-      }
-
-      if (
-        !modifiedFeatureRef.current
-          .getGeometry()
-          ?.intersectsCoordinate(featureAtClick)
-      ) {
-        setEnableSelect(true);
-        setEnableModify(false);
-        return;
-      }
-    };
-
-    const handleDoubleClick = (e: MapBrowserEvent<UIEvent>) => {
-      const featureAtDblClick = e.coordinate;
-
-      if (!modifiedFeatureRef.current) {
-        console.log("No feature to modify");
-        return;
-      }
-
-      if (
-        modifiedFeatureRef.current
-          .getGeometry()
-          ?.intersectsCoordinate(featureAtDblClick)
-      ) {
-        sourceModify.removeFeature(modifiedFeatureRef.current);
-        source.addFeature(modifiedFeatureRef.current);
-
-        map.removeInteraction(modify);
-        map.removeLayer(layerModify);
-        setEnableSelect(true);
-        modifiedFeatureRef.current = null;
-        alert("Done modifying a feature");
-        setModifyQuantity((prev) => prev + 1);
-      }
+    const handleDoubleClick = () => {
+      if (!modifiedFeatureRef.current) return;
+      sourceModify.removeFeature(modifiedFeatureRef.current);
+      source.addFeature(modifiedFeatureRef.current);
+      setEnableSelect(true);
+      setEnableModify(false);
+      setIsSelected(false);
+      alert("Feature modified");
+      modifiedFeatureRef.current = null;
     };
 
     map.on("dblclick", handleDoubleClick);
-    map.on("singleclick", handleSingleClick);
 
     return () => {
+      if (modifiedFeatureRef.current) {
+        sourceModify.clear();
+        console.log(source.getFeatures().length);
+        //source.removeFeature(tempFeature);
+        source.addFeature(tempFeature);
+        console.log("Feature added back to source");
+      }
       if (modify) {
         map.removeInteraction(modify);
       }
@@ -120,9 +97,8 @@ const ModifyInteractions = ({
       modify.un("modifystart", modifyStartListener.listener);
       modify.un("modifyend", modifyEndListener.listener);
       map.un("dblclick", handleDoubleClick);
-      map.un("singleclick", handleSingleClick);
     };
-  }, [map, tempFeature, vectorLayer]);
+  }, [map, vectorLayer]);
 
   return null;
 };

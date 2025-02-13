@@ -1,12 +1,11 @@
 import VectorLayer from "ol/layer/Vector";
-import { Feature, Map } from "ol";
+import { Map } from "ol";
 import { useEffect, useRef } from "react";
 import VectorSource from "ol/source/Vector";
 import { Type } from "ol/geom/Geometry";
 import Draw from "ol/interaction/Draw";
 import { styleDraw } from "../../libs/style";
 import { useCombinedContext } from "../../hooks/useCombinedContext";
-import { drawDblClick } from "../../utils/drawDblClick";
 
 export const DrawInteractions = ({
   map,
@@ -17,8 +16,6 @@ export const DrawInteractions = ({
   vectorLayer: VectorLayer | null;
   geometryType: string;
 }) => {
-  const featureRef = useRef<Feature | null>(null);
-
   const drawRef = useRef<Draw | null>(null);
   const isDrawingRef = useRef<boolean>(false);
 
@@ -26,7 +23,6 @@ export const DrawInteractions = ({
     isDrawingRef.current = value;
     console.log(drawRef.current);
     if (!value && drawRef.current !== null) {
-      console.log("set active false");
       drawRef.current?.setActive(false);
     }
   };
@@ -58,26 +54,41 @@ export const DrawInteractions = ({
       document.body.style.cursor = "crosshair";
     });
 
-    const listenerKeyEnd = draw.on("drawend", (e) => {
+    const listenerKeyEnd = draw.on("drawend", () => {
       document.body.style.cursor = "default";
-      featureRef.current = e.feature;
       setDrawQuantity((prev) => prev + 1);
     });
 
     const handleSingleClick = () => {
-      console.log("single click");
       if (!isDrawingRef.current) {
-        console.log("drawing ne");
         draw.setActive(true);
         updateIsDrawing(true);
       }
     };
 
-    const handleDblClick = drawDblClick({
-      source,
-      sourceDraw,
-      setIsDrawing: updateIsDrawing,
-    });
+    const handleDblClick = () => {
+      const featureLast =
+        sourceDraw.getFeatures()[sourceDraw.getFeatures().length - 1];
+
+      console.log(sourceDraw.getFeatures().length);
+
+      if (featureLast.getGeometry()?.getType() === "Point") {
+        console.log("Point");
+        sourceDraw.removeFeature(featureLast);
+        sourceDraw.removeFeature(
+          sourceDraw.getFeatures()[sourceDraw.getFeatures().length - 1],
+        );
+      }
+
+      if (sourceDraw.getFeatures().length) {
+        source.addFeatures(sourceDraw.getFeatures());
+        sourceDraw.clear();
+        document.body.style.cursor = "default";
+        alert("Done drawing a feature");
+        updateIsDrawing(false);
+        console.log(source.getFeatures().length);
+      }
+    };
 
     map?.on("dblclick", handleDblClick);
     map?.on("singleclick", handleSingleClick);

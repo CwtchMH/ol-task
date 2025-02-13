@@ -8,6 +8,7 @@ export const TranslateAction = () => {
     setEnableModify,
     setEnableSelect,
     setEnableDraw,
+    setTypeInteraction,
   } = useTypeContext();
 
   const handleClick = () => {
@@ -15,6 +16,7 @@ export const TranslateAction = () => {
     setEnableModify(false);
     setEnableSelect(false);
     setEnableDraw(false);
+    setTypeInteraction("Translate");
   };
 
   useEffect(() => {

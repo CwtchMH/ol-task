@@ -9,6 +9,8 @@ export const TypeProvider = ({ children }: { children: React.ReactNode }) => {
   const [enableSelect, setEnableSelect] = React.useState(false);
   const [enableTranslate, setEnableTranslate] = React.useState(false);
   const [typeGeometry, setTypeGeometry] = React.useState<string>("Polygon");
+  const [typeInteraction, setTypeInteraction] = React.useState<string>("");
+  const [isSelected, setIsSelected] = React.useState<boolean>(false);
 
   return (
     <TypeContext.Provider
@@ -23,6 +25,10 @@ export const TypeProvider = ({ children }: { children: React.ReactNode }) => {
         setEnableTranslate,
         typeGeometry,
         setTypeGeometry,
+        typeInteraction,
+        setTypeInteraction,
+        isSelected,
+        setIsSelected,
       }}
     >
       {children}

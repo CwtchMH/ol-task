@@ -9,6 +9,7 @@ export const DrawAction = () => {
     setEnableModify,
     setEnableSelect,
     setEnableTranslate,
+    setIsSelected,
   } = useTypeContext();
 
   const handleClick = () => {
@@ -16,6 +17,7 @@ export const DrawAction = () => {
     setEnableModify(false);
     setEnableSelect(false);
     setEnableTranslate(false);
+    setIsSelected(false);
   };
 
   useEffect(() => {

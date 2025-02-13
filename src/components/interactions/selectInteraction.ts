@@ -1,31 +1,27 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Map } from "ol";
 import VectorLayer from "ol/layer/Vector";
 import Select from "ol/interaction/Select";
-import { useTypeContext } from "../../context/TypeContext";
 import Feature from "ol/Feature";
-import { click } from "ol/events/condition";
+import { useCombinedContext } from "../../hooks/useCombinedContext";
 
 const SelectInteractions = ({
   map,
   vectorLayer,
-  setIsSelected,
   setTempFeature,
 }: {
   map: Map | null;
   vectorLayer: VectorLayer | null;
-  setIsSelected: (isSelected: boolean) => void;
   setTempFeature: (tempFeature: Feature | null) => void;
 }) => {
-  const { setEnableModify, setEnableDraw, setEnableSelect } = useTypeContext();
+  const featureRef = useRef<Feature | null>(null);
+  const { setEnableDraw, setEnableSelect, setIsSelected, setEnableModify } =
+    useCombinedContext();
   useEffect(() => {
     if (!map || !vectorLayer) return;
 
-    // const source = vectorLayer.getSource() as Source;
-
     const select = new Select({
       layers: [vectorLayer],
-      condition: click,
       multi: false,
     });
 
@@ -33,20 +29,26 @@ const SelectInteractions = ({
 
     const listener = select.on("select", (e) => {
       const feature = e.selected[0];
-      setIsSelected(true);
-      setTempFeature(new Feature(feature.getGeometry()));
-      setEnableModify(true);
-      setEnableDraw(false);
-      setEnableSelect(false);
-
-      console.log(vectorLayer.getSource()?.getFeatures().length);
+      if (!feature) return;
+      featureRef.current = feature;
     });
+
+    const handleDblClick = () => {
+      setIsSelected(true);
+      setTempFeature(featureRef.current);
+      setEnableDraw(false);
+      setEnableModify(true);
+      setEnableSelect(false);
+    };
+
+    map?.on("dblclick", handleDblClick);
 
     return () => {
       map.removeInteraction(select);
       select.un("select", listener.listener);
+      map.un("dblclick", handleDblClick);
     };
-  }, [map, vectorLayer]);
+  }, []);
 
   return null;
 };
