@@ -19,10 +19,16 @@ export const DrawInteractions = ({
 }) => {
   const featureRef = useRef<Feature | null>(null);
 
+  const drawRef = useRef<Draw | null>(null);
   const isDrawingRef = useRef<boolean>(false);
 
   const updateIsDrawing = (value: boolean) => {
     isDrawingRef.current = value;
+    console.log(drawRef.current);
+    if (!value && drawRef.current !== null) {
+      console.log("set active false");
+      drawRef.current?.setActive(false);
+    }
   };
 
   const { setDrawQuantity } = useCombinedContext();
@@ -44,6 +50,7 @@ export const DrawInteractions = ({
       type: geometryType as Type,
     });
 
+    drawRef.current = draw;
     map?.addInteraction(draw);
 
     const listenerKeyStart = draw.on("drawstart", () => {
@@ -55,7 +62,6 @@ export const DrawInteractions = ({
       document.body.style.cursor = "default";
       featureRef.current = e.feature;
       setDrawQuantity((prev) => prev + 1);
-      draw.setActive(false);
     });
 
     const handleSingleClick = () => {

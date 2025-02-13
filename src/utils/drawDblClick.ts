@@ -12,6 +12,19 @@ export const drawDblClick = ({
   return () => {
     //sourceDraw.clear();
 
+    const featureLast =
+      sourceDraw.getFeatures()[sourceDraw.getFeatures().length - 1];
+
+    console.log(sourceDraw.getFeatures().length);
+
+    if (featureLast.getGeometry()?.getType() === "Point") {
+      console.log("Point");
+      sourceDraw.removeFeature(featureLast);
+      sourceDraw.removeFeature(
+        sourceDraw.getFeatures()[sourceDraw.getFeatures().length - 1],
+      );
+    }
+
     if (sourceDraw.getFeatures().length) {
       source.addFeatures(sourceDraw.getFeatures());
       sourceDraw.clear();
