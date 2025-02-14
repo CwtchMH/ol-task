@@ -11,7 +11,6 @@ export const MapWrapper = () => {
   const {
     enableDraw,
     enableSelect,
-    enableTranslate,
     typeGeometry,
     map,
     vectorLayer,
@@ -32,6 +31,7 @@ export const MapWrapper = () => {
   return (
     <div className="w-full">
       <div
+        data-testid="map"
         id="map"
         ref={mapRef}
         style={{ height: "100vh", width: "auto" }}
@@ -43,7 +43,7 @@ export const MapWrapper = () => {
           geometryType={typeGeometry}
         />
       )}
-      {map && vectorLayer && enableSelect && !enableTranslate && (
+      {map && vectorLayer && enableSelect && (
         <SelectInteractions
           map={map}
           vectorLayer={vectorLayer}

@@ -1,9 +1,4 @@
-import {
-  DrawAction,
-  ModifyAction,
-  TranslateAction,
-  NotKnown,
-} from "./controls";
+import { DrawAction, ModifyAction, TranslateAction, UnKnown } from "./controls";
 
 export function ToolBar() {
   return (
@@ -14,7 +9,7 @@ export function ToolBar() {
       <DrawAction />
       <ModifyAction />
       <TranslateAction />
-      <NotKnown />
+      <UnKnown />
     </div>
   );
 }

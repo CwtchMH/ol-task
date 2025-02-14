@@ -37,7 +37,6 @@ const SelectInteractions = ({
       const feature = e.selected[0];
       if (!feature) return;
       featureRef.current = feature;
-      console.log("featureRef", featureRef.current);
     });
 
     const handleDblClick = () => {
