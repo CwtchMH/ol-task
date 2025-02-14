@@ -1,3 +1,4 @@
+import { Feature } from "ol";
 import React from "react";
 
 export interface IType {
@@ -15,6 +16,8 @@ export interface IType {
   setTypeInteraction: React.Dispatch<React.SetStateAction<string>>;
   isSelected: boolean;
   setIsSelected: React.Dispatch<React.SetStateAction<boolean>>;
+  tempFeature: Feature | null;
+  setTempFeature: React.Dispatch<React.SetStateAction<Feature | null>>;
 }
 
 export interface IData {

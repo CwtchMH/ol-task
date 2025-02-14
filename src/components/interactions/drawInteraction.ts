@@ -1,6 +1,6 @@
 import VectorLayer from "ol/layer/Vector";
 import { Map } from "ol";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import VectorSource from "ol/source/Vector";
 import { Type } from "ol/geom/Geometry";
 import Draw from "ol/interaction/Draw";
@@ -21,23 +21,24 @@ export const DrawInteractions = ({
 
   const updateIsDrawing = (value: boolean) => {
     isDrawingRef.current = value;
-    console.log(drawRef.current);
     if (!value && drawRef.current !== null) {
       drawRef.current?.setActive(false);
     }
   };
 
-  const { setDrawQuantity } = useCombinedContext();
+  const { setDrawQuantity, enableDraw } = useCombinedContext();
+
+  const [sourceDraw] = useState(new VectorSource({ wrapX: false }));
+
+  const [layerDraw] = useState(
+    new VectorLayer({
+      source: sourceDraw,
+      style: styleDraw,
+    }),
+  );
 
   useEffect(() => {
     const source = vectorLayer?.getSource() as VectorSource;
-
-    const sourceDraw = new VectorSource({ wrapX: false });
-
-    const layerDraw = new VectorLayer({
-      source: sourceDraw,
-      style: styleDraw,
-    });
 
     map?.addLayer(layerDraw);
 
@@ -50,7 +51,6 @@ export const DrawInteractions = ({
     map?.addInteraction(draw);
 
     const listenerKeyStart = draw.on("drawstart", () => {
-      console.log("Start drawing");
       document.body.style.cursor = "crosshair";
     });
 
@@ -70,10 +70,7 @@ export const DrawInteractions = ({
       const featureLast =
         sourceDraw.getFeatures()[sourceDraw.getFeatures().length - 1];
 
-      console.log(sourceDraw.getFeatures().length);
-
       if (featureLast.getGeometry()?.getType() === "Point") {
-        console.log("Point");
         sourceDraw.removeFeature(featureLast);
         sourceDraw.removeFeature(
           sourceDraw.getFeatures()[sourceDraw.getFeatures().length - 1],
@@ -86,7 +83,6 @@ export const DrawInteractions = ({
         document.body.style.cursor = "default";
         alert("Done drawing a feature");
         updateIsDrawing(false);
-        console.log(source.getFeatures().length);
       }
     };
 
@@ -94,7 +90,7 @@ export const DrawInteractions = ({
     map?.on("singleclick", handleSingleClick);
 
     return () => {
-      sourceDraw.clear();
+      if (!enableDraw) sourceDraw.clear();
       map?.removeLayer(layerDraw);
       map?.removeInteraction(draw);
       draw.un("drawstart", listenerKeyStart.listener);
@@ -102,7 +98,7 @@ export const DrawInteractions = ({
       map?.un("dblclick", handleDblClick);
       map?.un("singleclick", handleSingleClick);
     };
-  }, [map, vectorLayer, geometryType]);
+  }, [geometryType]);
 
   return null;
 };

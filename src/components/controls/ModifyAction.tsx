@@ -10,6 +10,10 @@ export const ModifyAction = () => {
     setEnableSelect,
     setEnableTranslate,
     setTypeInteraction,
+    typeInteraction,
+    setTempFeature,
+    tempFeature,
+    setIsSelected,
   } = useTypeContext();
 
   const handleClick = () => {
@@ -18,6 +22,8 @@ export const ModifyAction = () => {
     setEnableSelect(true);
     setEnableTranslate(false);
     setTypeInteraction("Modify");
+    setTempFeature(null);
+    setIsSelected(false);
   };
 
   useEffect(() => {
@@ -27,11 +33,11 @@ export const ModifyAction = () => {
     if (enableSelect) {
       console.log("Select action enabled");
     }
-  }, [enableModify, enableSelect]);
+  }, [enableModify, enableSelect, typeInteraction, tempFeature]);
 
   return (
     <div
-      className={`hover:bg-blue-400 ${enableModify || enableSelect ? "bg-blue-400" : ""} hover:cursor-pointer p-2 rounded-md`}
+      className={`hover:bg-blue-400 ${enableModify || (enableSelect && typeInteraction === "Modify") ? "bg-blue-400" : ""} hover:cursor-pointer p-2 rounded-md`}
       onClick={handleClick}
     >
       <svg

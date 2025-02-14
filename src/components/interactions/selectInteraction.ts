@@ -15,8 +15,14 @@ const SelectInteractions = ({
   setTempFeature: (tempFeature: Feature | null) => void;
 }) => {
   const featureRef = useRef<Feature | null>(null);
-  const { setEnableDraw, setEnableSelect, setIsSelected, setEnableModify } =
-    useCombinedContext();
+  const {
+    setEnableDraw,
+    setEnableSelect,
+    setIsSelected,
+    setEnableModify,
+    typeInteraction,
+    setEnableTranslate,
+  } = useCombinedContext();
   useEffect(() => {
     if (!map || !vectorLayer) return;
 
@@ -31,13 +37,18 @@ const SelectInteractions = ({
       const feature = e.selected[0];
       if (!feature) return;
       featureRef.current = feature;
+      console.log("featureRef", featureRef.current);
     });
 
     const handleDblClick = () => {
       setIsSelected(true);
       setTempFeature(featureRef.current);
       setEnableDraw(false);
-      setEnableModify(true);
+      if (typeInteraction === "Modify") {
+        setEnableModify(true);
+      } else if (typeInteraction === "Translate") {
+        setEnableTranslate(true);
+      }
       setEnableSelect(false);
     };
 

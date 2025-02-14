@@ -22,8 +22,9 @@ const ModifyInteractions = ({
 
   const { setEnableSelect, setEnableModify } = useCombinedContext();
 
+  const quantitySource = vectorLayer?.getSource()?.getFeatures().length;
+
   useEffect(() => {
-    console.log("ModifyInteractions");
     if (!map || !tempFeature || !vectorLayer) return;
 
     const source = vectorLayer.getSource() as VectorSource;
@@ -43,22 +44,19 @@ const ModifyInteractions = ({
       }
     }
 
-    const he = tempFeature.clone();
+    const featureClone = tempFeature.clone();
 
-    sourceModify.addFeature(he);
+    sourceModify.addFeature(featureClone);
 
     const modify = new Modify({
       //source: sourceModify,
-      features: new Collection([he]),
+      features: new Collection([featureClone]),
     });
-
-    console.log(source.getFeatures().length);
 
     map.addInteraction(modify);
 
     const modifyStartListener = modify.on("modifystart", () => {
       document.body.style.cursor = "pointer";
-      console.log("Start modifying a feature");
     });
 
     const modifyEndListener = modify.on("modifyend", (e) => {
@@ -83,10 +81,10 @@ const ModifyInteractions = ({
     return () => {
       if (modifiedFeatureRef.current) {
         sourceModify.clear();
-        console.log(source.getFeatures().length);
-        //source.removeFeature(tempFeature);
         source.addFeature(tempFeature);
-        console.log("Feature added back to source");
+      }
+      if (quantitySource !== source.getFeatures().length) {
+        source.addFeature(tempFeature);
       }
       if (modify) {
         map.removeInteraction(modify);
@@ -98,7 +96,7 @@ const ModifyInteractions = ({
       modify.un("modifyend", modifyEndListener.listener);
       map.un("dblclick", handleDoubleClick);
     };
-  }, [map, vectorLayer]);
+  }, []);
 
   return null;
 };

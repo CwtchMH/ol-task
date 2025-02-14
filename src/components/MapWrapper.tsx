@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   DrawInteractions,
   SelectInteractions,
   TranslateInteractions,
 } from "./interactions";
 import { ModifyInteractions } from "./interactions";
-import Feature from "ol/Feature";
 import { useCombinedContext } from "../hooks/useCombinedContext";
 
 export const MapWrapper = () => {
@@ -20,9 +19,9 @@ export const MapWrapper = () => {
     typeInteraction,
     isSelected,
     setIsSelected,
+    tempFeature,
+    setTempFeature,
   } = useCombinedContext();
-
-  const [tempFeature, setTempFeature] = useState<Feature | null>(null);
 
   useEffect(() => {
     if (tempFeature) {
@@ -64,7 +63,7 @@ export const MapWrapper = () => {
           map={map}
           vectorLayer={vectorLayer}
           tempFeature={tempFeature}
-          //setIsSelected={setIsSelected}
+          setIsSelected={setIsSelected}
         />
       )}
     </div>
