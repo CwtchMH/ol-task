@@ -1,27 +1,39 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   DrawInteractions,
   SelectInteractions,
   TranslateInteractions,
 } from "./interactions";
 import { ModifyInteractions } from "./interactions";
-import { useCombinedContext } from "../hooks/useCombinedContext";
+import { Map } from "ol";
+import VectorLayer from "ol/layer/Vector";
+import Feature from "ol/Feature";
 
-export const MapWrapper = () => {
-  const {
-    enableDraw,
-    enableSelect,
-    typeGeometry,
-    map,
-    vectorLayer,
-    mapRef,
-    typeInteraction,
-    isSelected,
-    setIsSelected,
-    tempFeature,
-    setTempFeature,
-  } = useCombinedContext();
-
+export const MapWrapper = ({
+  enableDraw,
+  enableSelect,
+  typeGeometry,
+  map,
+  vectorLayer,
+  mapRef,
+  typeInteraction,
+  isSelected,
+  setIsSelected,
+  tempFeature,
+  setTempFeature,
+}: {
+  enableDraw: boolean;
+  enableSelect: boolean;
+  typeGeometry: string;
+  map: Map;
+  vectorLayer: VectorLayer;
+  mapRef: React.RefObject<HTMLDivElement>;
+  typeInteraction: string;
+  isSelected: boolean;
+  setIsSelected: (isSelected: boolean) => void;
+  tempFeature: Feature | null;
+  setTempFeature: (feature: Feature | null) => void;
+}) => {
   useEffect(() => {
     if (tempFeature) {
       console.log("tempFeature", tempFeature);
