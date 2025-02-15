@@ -1,5 +1,5 @@
 import * as matchers from "@testing-library/jest-dom/matchers";
-import { expect } from "vitest";
+import { expect, vi } from "vitest";
 import "@testing-library/jest-dom";
 import "@vitest/web-worker";
 
@@ -12,3 +12,13 @@ if (typeof URL.createObjectURL !== "function") {
     return "blob:dummy-url";
   };
 }
+
+// Mock the ResizeObserver
+const ResizeObserverMock = vi.fn(() => ({
+  observe: vi.fn(),
+  unobserve: vi.fn(),
+  disconnect: vi.fn(),
+}));
+
+// Stub the global ResizeObserver
+vi.stubGlobal("ResizeObserver", ResizeObserverMock);

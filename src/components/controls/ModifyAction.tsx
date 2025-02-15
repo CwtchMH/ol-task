@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useTypeContext } from "../../context/TypeContext";
+import { useTypeContext } from "../../context/TypeProvider";
 
 export const ModifyAction = () => {
   const {

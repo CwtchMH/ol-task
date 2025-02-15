@@ -1,5 +1,5 @@
 import React from "react";
-import { TypeContext } from "../context/TypeContext";
+import { TypeContext } from "../context/TypeProvider";
 import { DataContext } from "../context/DataProvider";
 import { useMapContext } from "../context/MapProvider";
 
