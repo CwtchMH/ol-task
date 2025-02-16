@@ -53,6 +53,7 @@ export const MapWrapper = ({
           map={map}
           vectorLayer={vectorLayer}
           geometryType={typeGeometry}
+          enableDraw={enableDraw}
         />
       )}
       {map && vectorLayer && enableSelect && (

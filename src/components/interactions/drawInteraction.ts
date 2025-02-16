@@ -5,16 +5,17 @@ import VectorSource from "ol/source/Vector";
 import { Type } from "ol/geom/Geometry";
 import Draw from "ol/interaction/Draw";
 import { styleDraw } from "../../libs/style";
-import { useCombinedContext } from "../../hooks/useCombinedContext";
 
 export const DrawInteractions = ({
   map,
   vectorLayer,
   geometryType,
+  enableDraw,
 }: {
   map: Map | null;
   vectorLayer: VectorLayer | null;
   geometryType: string;
+  enableDraw: boolean;
 }) => {
   const drawRef = useRef<Draw | null>(null);
   const isDrawingRef = useRef<boolean>(false);
@@ -25,8 +26,6 @@ export const DrawInteractions = ({
       drawRef.current?.setActive(false);
     }
   };
-
-  const { setDrawQuantity, enableDraw } = useCombinedContext();
 
   const [sourceDraw] = useState(new VectorSource({ wrapX: false }));
 
@@ -47,6 +46,7 @@ export const DrawInteractions = ({
       type: geometryType as Type,
     });
 
+    draw.set("mySource", sourceDraw);
     drawRef.current = draw;
     map?.addInteraction(draw);
 
@@ -56,7 +56,6 @@ export const DrawInteractions = ({
 
     const listenerKeyEnd = draw.on("drawend", () => {
       document.body.style.cursor = "default";
-      setDrawQuantity((prev) => prev + 1);
     });
 
     const handleSingleClick = () => {
@@ -70,7 +69,7 @@ export const DrawInteractions = ({
       const featureLast =
         sourceDraw.getFeatures()[sourceDraw.getFeatures().length - 1];
 
-      if (featureLast.getGeometry()?.getType() === "Point") {
+      if (featureLast && featureLast.getGeometry()?.getType() === "Point") {
         sourceDraw.removeFeature(featureLast);
         sourceDraw.removeFeature(
           sourceDraw.getFeatures()[sourceDraw.getFeatures().length - 1],
