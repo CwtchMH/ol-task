@@ -41,7 +41,7 @@ describe("DrawInteractions", () => {
     expect(drawInteraction.getActive()).toBe(true);
   });
 
-  it("should handle double click to finish drawing", () => {
+  it("should add feature to source after drawing", () => {
     renderHook(() =>
       DrawInteractions({ map, vectorLayer, geometryType, enableDraw }),
     );
@@ -52,18 +52,21 @@ describe("DrawInteractions", () => {
       .find((interaction) => interaction instanceof Draw) as Draw;
     expect(drawInteraction).toBeDefined();
     const sourceDraw = drawInteraction.get("mySource") as VectorSource;
-
     expect(sourceDraw).toBeDefined();
+
     sourceDraw.addFeature(new Feature());
+
     expect(sourceDraw.getFeatures().length).toBe(1);
+
+    // Simulate double click to finish drawing
     act(() => {
       map.dispatchEvent(new Event("dblclick"));
     });
 
     expect(vectorLayer.getSource()?.getFeatures().length).toBe(1);
-
     expect(sourceDraw.getFeatures().length).toBe(0);
   });
+
   it("should handle double click to add 2 features", () => {
     renderHook(() =>
       DrawInteractions({ map, vectorLayer, geometryType, enableDraw }),

@@ -1,4 +1,3 @@
-// src/__tests__/MapWrapper.test.tsx
 import { vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { MapWrapper } from "../components/MapWrapper";
@@ -15,22 +14,30 @@ import VectorSource from "ol/source/Vector";
 import Translate from "ol/interaction/Translate";
 
 describe("Testing MapWrapper component", () => {
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it("should render MapWrapper component", () => {
-    const enableDraw = false;
-    const enableSelect = false;
-    const typeGeometry = "Polygon";
+  // Helper function to set up the test environment
+  const setup = ({
+    enableDraw = false,
+    enableSelect = false,
+    typeGeometry = "Polygon",
+    typeInteraction = "",
+    isSelected = false,
+    tempFeature = null,
+  }: {
+    enableDraw?: boolean;
+    enableSelect?: boolean;
+    typeGeometry?: string;
+    typeInteraction?: string;
+    isSelected?: boolean;
+    tempFeature?: Feature | null;
+  }) => {
     const map = new Map();
-    const vectorLayer = new VectorLayer();
+    const vectorLayer = new VectorLayer({
+      source: new VectorSource(),
+    });
     const mapRef = { current: document.createElement("div") };
-    const typeInteraction = "";
-    const isSelected = false;
     const setIsSelected = vi.fn();
-    const tempFeature = null;
     const setTempFeature = vi.fn();
+
     render(
       <DataProvider>
         <MapProvider>
@@ -39,7 +46,7 @@ describe("Testing MapWrapper component", () => {
               enableDraw={enableDraw}
               enableSelect={enableSelect}
               typeGeometry={typeGeometry}
-              map={map!}
+              map={map}
               vectorLayer={vectorLayer}
               mapRef={mapRef}
               typeInteraction={typeInteraction}
@@ -53,181 +60,68 @@ describe("Testing MapWrapper component", () => {
       </DataProvider>,
     );
 
+    return {
+      map,
+      vectorLayer,
+      setIsSelected,
+      setTempFeature,
+    };
+  };
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should render MapWrapper component", () => {
+    setup({});
     const mapElement = screen.getByTestId("map");
     expect(mapElement).toBeInTheDocument();
     expect(mapElement).toHaveStyle("height: 100vh");
   });
 
   it("should render DrawInteractions component", () => {
-    const enableDraw = true;
-    const enableSelect = false;
-    const typeGeometry = "Polygon";
-    const map = new Map();
-    const vectorLayer = new VectorLayer();
-    const mapRef = { current: document.createElement("div") };
-    const typeInteraction = "";
-    const isSelected = false;
-    const setIsSelected = vi.fn();
-    const tempFeature = null;
-    const setTempFeature = vi.fn();
-    render(
-      <DataProvider>
-        <MapProvider>
-          <TypeProvider>
-            <MapWrapper
-              enableDraw={enableDraw}
-              enableSelect={enableSelect}
-              typeGeometry={typeGeometry}
-              map={map!}
-              vectorLayer={vectorLayer}
-              mapRef={mapRef}
-              typeInteraction={typeInteraction}
-              isSelected={isSelected}
-              setIsSelected={setIsSelected}
-              tempFeature={tempFeature}
-              setTempFeature={setTempFeature}
-            />
-          </TypeProvider>
-        </MapProvider>
-      </DataProvider>,
-    );
-
+    const { map } = setup({ enableDraw: true });
     const drawInteractions = map
       .getInteractions()
       .getArray()
       .find((interaction) => interaction instanceof Draw);
-
     expect(drawInteractions).toBeDefined();
   });
 
   it("should render SelectInteractions component", () => {
-    const enableDraw = false;
-    const enableSelect = true;
-    const typeGeometry = "Polygon";
-    const map = new Map();
-    const vectorLayer = new VectorLayer();
-    const mapRef = { current: document.createElement("div") };
-    const typeInteraction = "";
-    const isSelected = false;
-    const setIsSelected = vi.fn();
-    const tempFeature = null;
-    const setTempFeature = vi.fn();
-    render(
-      <DataProvider>
-        <MapProvider>
-          <TypeProvider>
-            <MapWrapper
-              enableDraw={enableDraw}
-              enableSelect={enableSelect}
-              typeGeometry={typeGeometry}
-              map={map!}
-              vectorLayer={vectorLayer}
-              mapRef={mapRef}
-              typeInteraction={typeInteraction}
-              isSelected={isSelected}
-              setIsSelected={setIsSelected}
-              tempFeature={tempFeature}
-              setTempFeature={setTempFeature}
-            />
-          </TypeProvider>
-        </MapProvider>
-      </DataProvider>,
-    );
-
+    const { map } = setup({ enableSelect: true });
     const selectInteractions = map
       .getInteractions()
       .getArray()
       .find((interaction) => interaction instanceof Select);
-
     expect(selectInteractions).toBeDefined();
   });
 
   it("should render ModifyInteractions component", () => {
-    const enableDraw = false;
-    const enableSelect = false;
-    const typeGeometry = "Polygon";
-    const map = new Map();
-    const source = new VectorSource();
-    const vectorLayer = new VectorLayer({
-      source: source,
-    });
-    const mapRef = { current: document.createElement("div") };
-    const typeInteraction = "Modify";
-    const isSelected = true;
-    const setIsSelected = vi.fn();
     const tempFeature = new Feature();
-    const setTempFeature = vi.fn();
-    render(
-      <DataProvider>
-        <MapProvider>
-          <TypeProvider>
-            <MapWrapper
-              enableDraw={enableDraw}
-              enableSelect={enableSelect}
-              typeGeometry={typeGeometry}
-              map={map!}
-              vectorLayer={vectorLayer}
-              mapRef={mapRef}
-              typeInteraction={typeInteraction}
-              isSelected={isSelected}
-              setIsSelected={setIsSelected}
-              tempFeature={tempFeature}
-              setTempFeature={setTempFeature}
-            />
-          </TypeProvider>
-        </MapProvider>
-      </DataProvider>,
-    );
-
+    const { map } = setup({
+      typeInteraction: "Modify",
+      isSelected: true,
+      tempFeature,
+    });
     const modifyInteractions = map
       .getInteractions()
       .getArray()
       .find((interaction) => interaction instanceof Modify);
-
     expect(modifyInteractions).toBeDefined();
   });
-  it("should render TranslateInteractions component", () => {
-    const enableDraw = false;
-    const enableSelect = false;
-    const typeGeometry = "Polygon";
-    const map = new Map();
-    const source = new VectorSource();
-    const vectorLayer = new VectorLayer({
-      source: source,
-    });
-    const mapRef = { current: document.createElement("div") };
-    const typeInteraction = "Translate";
-    const isSelected = true;
-    const setIsSelected = vi.fn();
-    const tempFeature = new Feature();
-    const setTempFeature = vi.fn();
-    render(
-      <DataProvider>
-        <MapProvider>
-          <TypeProvider>
-            <MapWrapper
-              enableDraw={enableDraw}
-              enableSelect={enableSelect}
-              typeGeometry={typeGeometry}
-              map={map!}
-              vectorLayer={vectorLayer}
-              mapRef={mapRef}
-              typeInteraction={typeInteraction}
-              isSelected={isSelected}
-              setIsSelected={setIsSelected}
-              tempFeature={tempFeature}
-              setTempFeature={setTempFeature}
-            />
-          </TypeProvider>
-        </MapProvider>
-      </DataProvider>,
-    );
 
+  it("should render TranslateInteractions component", () => {
+    const tempFeature = new Feature();
+    const { map } = setup({
+      typeInteraction: "Translate",
+      isSelected: true,
+      tempFeature,
+    });
     const translateInteractions = map
       .getInteractions()
       .getArray()
       .find((interaction) => interaction instanceof Translate);
-
     expect(translateInteractions).toBeDefined();
   });
 });

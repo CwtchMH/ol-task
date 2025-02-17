@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import {
   DrawInteractions,
   SelectInteractions,
@@ -34,11 +34,11 @@ export const MapWrapper = ({
   tempFeature: Feature | null;
   setTempFeature: (feature: Feature | null) => void;
 }) => {
-  useEffect(() => {
-    if (tempFeature) {
-      console.log("tempFeature", tempFeature);
-    }
-  }, [tempFeature]);
+  // useEffect(() => {
+  //   if (tempFeature) {
+  //     console.log("tempFeature", tempFeature);
+  //   }
+  // }, [tempFeature]);
 
   return (
     <div className="w-full">

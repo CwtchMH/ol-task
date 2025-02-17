@@ -33,6 +33,7 @@ export const TranslateAction = () => {
     if (enableSelect) {
       console.log("Select action enabled");
     }
+    console.log("Type interaction", typeInteraction);
   }, [enableTranslate, enableSelect, typeInteraction, tempFeature]);
 
   return (

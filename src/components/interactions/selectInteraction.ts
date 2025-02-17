@@ -43,10 +43,13 @@ const SelectInteractions = ({
       setIsSelected(true);
       setTempFeature(featureRef.current);
       setEnableDraw(false);
+      console.log("Type interaction", typeInteraction);
       if (typeInteraction === "Modify") {
         setEnableModify(true);
+        setEnableTranslate(false);
       } else if (typeInteraction === "Translate") {
         setEnableTranslate(true);
+        setEnableModify(false);
       }
       setEnableSelect(false);
     };
