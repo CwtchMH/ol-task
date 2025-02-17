@@ -21,6 +21,8 @@ export const MapWrapper = ({
   setIsSelected,
   tempFeature,
   setTempFeature,
+  setEnableSelect,
+  setEnableModify,
 }: {
   enableDraw: boolean;
   enableSelect: boolean;
@@ -33,13 +35,9 @@ export const MapWrapper = ({
   setIsSelected: (isSelected: boolean) => void;
   tempFeature: Feature | null;
   setTempFeature: (feature: Feature | null) => void;
+  setEnableSelect: (enableSelect: boolean) => void;
+  setEnableModify: (enableModify: boolean) => void;
 }) => {
-  // useEffect(() => {
-  //   if (tempFeature) {
-  //     console.log("tempFeature", tempFeature);
-  //   }
-  // }, [tempFeature]);
-
   return (
     <div className="w-full">
       <div
@@ -69,6 +67,8 @@ export const MapWrapper = ({
           tempFeature={tempFeature}
           vectorLayer={vectorLayer}
           setIsSelected={setIsSelected}
+          setEnableSelect={setEnableSelect}
+          setEnableModify={setEnableModify}
         />
       )}
       {map && vectorLayer && isSelected && typeInteraction === "Translate" && (

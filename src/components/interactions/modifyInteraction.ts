@@ -5,22 +5,23 @@ import { Map } from "ol";
 import VectorLayer from "ol/layer/Vector";
 import VectorSource from "ol/source/Vector";
 import { styleModify } from "../../libs/style";
-import { useCombinedContext } from "../../hooks/useCombinedContext";
 
 const ModifyInteractions = ({
   map,
   tempFeature,
   vectorLayer,
   setIsSelected,
+  setEnableSelect,
+  setEnableModify,
 }: {
   map: Map | null;
   tempFeature: Feature | null;
   vectorLayer: VectorLayer | null;
   setIsSelected: (isSelected: boolean) => void;
+  setEnableSelect: (enableSelect: boolean) => void;
+  setEnableModify: (enableModify: boolean) => void;
 }) => {
   const modifiedFeatureRef = useRef<Feature | null>(null);
-
-  const { setEnableSelect, setEnableModify } = useCombinedContext();
 
   const quantitySource = vectorLayer?.getSource()?.getFeatures().length;
 
@@ -53,6 +54,7 @@ const ModifyInteractions = ({
       features: new Collection([featureClone]),
     });
 
+    modify.set("mySource", sourceModify);
     map.addInteraction(modify);
 
     const modifyStartListener = modify.on("modifystart", () => {
