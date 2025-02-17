@@ -37,6 +37,8 @@ describe("Testing MapWrapper component", () => {
     const mapRef = { current: document.createElement("div") };
     const setIsSelected = vi.fn();
     const setTempFeature = vi.fn();
+    const setEnableSelect = vi.fn();
+    const setEnableModify = vi.fn();
 
     render(
       <DataProvider>
@@ -54,6 +56,8 @@ describe("Testing MapWrapper component", () => {
               setIsSelected={setIsSelected}
               tempFeature={tempFeature}
               setTempFeature={setTempFeature}
+              setEnableSelect={setEnableSelect}
+              setEnableModify={setEnableModify}
             />
           </TypeProvider>
         </MapProvider>
