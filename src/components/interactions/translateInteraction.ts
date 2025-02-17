@@ -6,23 +6,22 @@ import Feature from "ol/Feature";
 import VectorSource from "ol/source/Vector";
 import { styleTranslate } from "../../libs/style";
 import { Collection } from "ol";
-import { useCombinedContext } from "../../hooks/useCombinedContext";
 
 const TranslateInteractions = ({
   map,
   vectorLayer,
   tempFeature,
   setIsSelected,
+  setEnableSelect,
+  setEnableTranslate,
 }: {
   map: Map | null;
   vectorLayer: VectorLayer | null;
   tempFeature: Feature | null;
   setIsSelected: (isSelected: boolean) => void;
+  setEnableSelect: (enableSelect: boolean) => void;
+  setEnableTranslate: (enableTranslate: boolean) => void;
 }) => {
-  // const selectedFeatureRef = useRef<Feature | null>(null);
-  // const extraFeatureRef = useRef<Feature | null>(null);
-
-  const { setEnableSelect, setEnableTranslate } = useCombinedContext();
   const featureTranslateRef = useRef<Feature | null>(null);
 
   useEffect(() => {
@@ -55,6 +54,7 @@ const TranslateInteractions = ({
       features: new Collection([featureClone]),
     });
 
+    translate.set("mySource", sourceTranslate);
     map.addInteraction(translate);
 
     const handleDblClick = () => {

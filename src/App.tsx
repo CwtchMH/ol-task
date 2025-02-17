@@ -18,6 +18,7 @@ function App() {
     setTempFeature,
     setEnableSelect,
     setEnableModify,
+    setEnableTranslate,
   } = useCombinedContext();
   return (
     <div id="main-div" className="flex flex-row w-full h-full">
@@ -37,6 +38,7 @@ function App() {
           setTempFeature={setTempFeature}
           setEnableSelect={setEnableSelect}
           setEnableModify={setEnableModify}
+          setEnableTranslate={setEnableTranslate}
         />
       </div>
     </div>

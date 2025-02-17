@@ -23,6 +23,7 @@ export const MapWrapper = ({
   setTempFeature,
   setEnableSelect,
   setEnableModify,
+  setEnableTranslate,
 }: {
   enableDraw: boolean;
   enableSelect: boolean;
@@ -37,6 +38,7 @@ export const MapWrapper = ({
   setTempFeature: (feature: Feature | null) => void;
   setEnableSelect: (enableSelect: boolean) => void;
   setEnableModify: (enableModify: boolean) => void;
+  setEnableTranslate: (enableTranslate: boolean) => void;
 }) => {
   return (
     <div className="w-full">
@@ -77,6 +79,8 @@ export const MapWrapper = ({
           vectorLayer={vectorLayer}
           tempFeature={tempFeature}
           setIsSelected={setIsSelected}
+          setEnableSelect={setEnableSelect}
+          setEnableTranslate={setEnableTranslate}
         />
       )}
     </div>

@@ -39,6 +39,7 @@ describe("Testing MapWrapper component", () => {
     const setTempFeature = vi.fn();
     const setEnableSelect = vi.fn();
     const setEnableModify = vi.fn();
+    const setEnableTranslate = vi.fn();
 
     render(
       <DataProvider>
@@ -58,6 +59,7 @@ describe("Testing MapWrapper component", () => {
               setTempFeature={setTempFeature}
               setEnableSelect={setEnableSelect}
               setEnableModify={setEnableModify}
+              setEnableTranslate={setEnableTranslate}
             />
           </TypeProvider>
         </MapProvider>
