@@ -61,15 +61,15 @@ const ModifyInteractions = ({
       document.body.style.cursor = "pointer";
     });
 
-    const modifyEndListener = modify.on("modifyend", (e) => {
+    const modifyEndListener = modify.on("modifyend", () => {
       document.body.style.cursor = "default";
-      const modifiedFeature = e.features.getArray()[0];
-      modifiedFeatureRef.current = modifiedFeature;
+      //const modifiedFeature = e.features.getArray()[0];
+      modifiedFeatureRef.current = featureClone;
     });
 
     const handleDoubleClick = () => {
       if (!modifiedFeatureRef.current) return;
-      sourceModify.removeFeature(modifiedFeatureRef.current);
+      sourceModify.clear();
       source.addFeature(modifiedFeatureRef.current);
       setEnableSelect(true);
       setEnableModify(false);

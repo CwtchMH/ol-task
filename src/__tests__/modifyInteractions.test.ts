@@ -104,7 +104,11 @@ describe("Modify interactions", () => {
     expect(sourceModify.getFeatures().length).toBe(1);
 
     act(() => {
-      modifyInteraction?.dispatchEvent(new Event("dblclick"));
+      modifyInteraction?.dispatchEvent(new Event("modifyend"));
+    });
+
+    act(() => {
+      map?.dispatchEvent(new Event("dblclick"));
     });
     expect(sourceModify.getFeatures().length).toBe(0);
     expect(source?.getFeatures().length).toBe(1);
