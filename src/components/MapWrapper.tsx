@@ -9,7 +9,7 @@ import { OSM } from "ol/source";
 import VectorSource from "ol/source/Vector";
 import GeoJSON from "ol/format/GeoJSON";
 import feature from "./data.json";
-import { Fill, RegularShape, Stroke, Style } from "ol/style";
+import { Circle, Fill, RegularShape, Stroke, Style } from "ol/style";
 import CircleStyle from "ol/style/Circle";
 import { Coordinate } from "ol/coordinate";
 import { Color } from "ol/color";
@@ -56,7 +56,6 @@ const getVertexStyles = (
     const rotation = calcAngleRad(currentCoordinate, prevCoordinate);
     // console.log("🚀 ~ prevCoordinate:", prevCoordinate)
     // console.log("🚀 ~ currentCoordinate:", currentCoordinate)
-    console.log("🚀 ~ rotation:", Math.round(((rotation % Math.PI / 4 + Math.PI / 4) % Math.PI / 4) / Math.PI / 4 * 1000 ) / 10000)
     const vertex = new RegularShape({
       points: 4,
       radius: Math.sqrt(2) * 4,
@@ -85,11 +84,11 @@ const vectorLayerStyle = new Style({
     color: "red", // Màu viền
     width: 2, // Độ rộng viền
   }),
-  // image: new CircleStyle({
-  //   radius: 6, // Kích thước điểm
-  //   fill: new Fill({ color: '#007bff' }),
-  //   stroke: new Stroke({ color: '#ffffff', width: 1 }),
-  // }),
+  image: new CircleStyle({
+    radius: 6, // Kích thước điểm
+    fill: new Fill({ color: '#007bff' }),
+    stroke: new Stroke({ color: '#ffffff', width: 1 }),
+  }),
 });
 
 export const MapWrapper = () => {
@@ -131,7 +130,7 @@ export const MapWrapper = () => {
         },{})
         // console.log("b", b);
         const a = Object.keys(b).map(k => {
-          console.log('(Math.PI / 2) * Number(k)', (CC) * Number(k), k);
+          // console.log('(Math.PI / 2) * Number(k)', (CC) * Number(k), k);
           const  vertex = new RegularShape({
             points: 4,
             radius: Math.sqrt(2) * 4,
@@ -166,7 +165,7 @@ export const MapWrapper = () => {
         //   // styles.push(...vertexAndStrokeStyle);
         //   return vertexStyles;
         // });
-        // // console.log("🚀 ~ coordinatesArray.forEach ~ styles:", styles)
+        // console.log("🚀 ~ coordinatesArray.forEach ~ styles:", styles)
         // console.log(a.flat(1).length);
         
         return [...styles, ...a];
@@ -231,7 +230,7 @@ export const MapWrapper = () => {
   });
 
   const modify = useMemo(() => {
-    return new Translate({features: vectorSource.getFeaturesCollection() ?? undefined})
+    return new Modify({source: vectorSource ?? undefined, style})
   },[style, vectorSource])
 
   useEffect(() => {
