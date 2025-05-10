@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useTypeContext } from "../../context/TypeContext";
+import { useTypeContext } from "../../context/TypeProvider";
 
 export const TranslateAction = () => {
   const {
@@ -8,24 +8,37 @@ export const TranslateAction = () => {
     setEnableModify,
     setEnableSelect,
     setEnableDraw,
+    setTypeInteraction,
+    enableSelect,
+    typeInteraction,
+    setTempFeature,
+    tempFeature,
+    setIsSelected,
   } = useTypeContext();
 
   const handleClick = () => {
-    setEnableTranslate(true);
+    setEnableTranslate(false);
     setEnableModify(false);
-    setEnableSelect(false);
+    setEnableSelect(true);
     setEnableDraw(false);
+    setTypeInteraction("Translate");
+    setTempFeature(null);
+    setIsSelected(false);
   };
 
   useEffect(() => {
     if (enableTranslate) {
       console.log("Translate action enabled");
     }
-  }, [enableTranslate]);
+    if (enableSelect) {
+      console.log("Select action enabled");
+    }
+    console.log("Type interaction", typeInteraction);
+  }, [enableTranslate, enableSelect, typeInteraction, tempFeature]);
 
   return (
     <div
-      className={`hover:bg-blue-400 ${enableTranslate ? "bg-blue-400" : ""} hover:cursor-pointer p-2 rounded-md`}
+      className={`hover:bg-blue-400 ${enableTranslate || (enableSelect && typeInteraction === "Translate") ? "bg-blue-400" : ""} hover:cursor-pointer p-2 rounded-md`}
       onClick={handleClick}
     >
       <svg

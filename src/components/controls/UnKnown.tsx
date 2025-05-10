@@ -1,4 +1,4 @@
-export const NotKnown = () => {
+export const UnKnown = () => {
   return (
     <div className="hover:bg-blue-400 hover:cursor-pointer p-2 rounded-md">
       <svg
@@ -19,4 +19,4 @@ export const NotKnown = () => {
   );
 };
 
-export default NotKnown;
+export default UnKnown;

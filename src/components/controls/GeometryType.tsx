@@ -1,25 +1,32 @@
-export default function GeometryType({
-  setGeometryType,
-}: {
-  setGeometryType: (type: string) => void;
-}) {
-  const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setGeometryType(e.target.value);
+import { useCombinedContext } from "../../hooks/useCombinedContext";
+
+export default function GeometryType() {
+  const { typeGeometry, setTypeGeometry } = useCombinedContext();
+
+  const handleTypeGeometry = (type: string) => () => {
+    setTypeGeometry(type);
   };
 
   return (
-    <div className="text-black" id="control">
-      <div className="" id="select-type">
-        <label htmlFor="type">Geometry type &nbsp;</label>
-        <select className="border" onChange={handleSelect} id="type">
-          <option value="Point">Point</option>
-          <option value="LineString">LineString</option>
-          <option value="Polygon">Polygon</option>
-          <option value="Circle">Circle</option>
-          <option value="None">None</option>
-        </select>
+    <div className={`flex flex-col gap-2`}>
+      <div
+        className={`text-center rounded-sm hover:bg-blue-400 cursor-pointer ${typeGeometry === "Point" ? "bg-blue-400" : ""}`}
+        onClick={handleTypeGeometry("Point")}
+      >
+        Point
       </div>
-      <div className="" id="coordinates"></div>
+      <div
+        className={`text-center rounded-sm hover:bg-blue-400 cursor-pointer ${typeGeometry === "LineString" ? "bg-blue-400" : ""}`}
+        onClick={handleTypeGeometry("LineString")}
+      >
+        LineString
+      </div>
+      <div
+        className={`text-center rounded-sm hover:bg-blue-400 cursor-pointer ${typeGeometry === "Polygon" ? "bg-blue-400" : ""}`}
+        onClick={handleTypeGeometry("Polygon")}
+      >
+        Polygon
+      </div>
     </div>
   );
 }

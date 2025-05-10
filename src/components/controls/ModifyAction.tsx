@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useTypeContext } from "../../context/TypeContext";
+import { useTypeContext } from "../../context/TypeProvider";
 
 export const ModifyAction = () => {
   const {
@@ -8,29 +8,36 @@ export const ModifyAction = () => {
     setEnableDraw,
     setEnableModify,
     setEnableSelect,
+    setEnableTranslate,
+    setTypeInteraction,
+    typeInteraction,
+    setTempFeature,
+    tempFeature,
+    setIsSelected,
   } = useTypeContext();
 
   const handleClick = () => {
     setEnableModify(false);
     setEnableDraw(false);
     setEnableSelect(true);
+    setEnableTranslate(false);
+    setTypeInteraction("Modify");
+    setTempFeature(null);
+    setIsSelected(false);
   };
 
   useEffect(() => {
-    if (enableSelect || enableModify) {
-      console.log("Modify or Select action enabled");
-      if (enableModify) {
-        console.log("Modify action enabled");
-      }
-      if (enableSelect) {
-        console.log("Select action enabled");
-      }
+    if (enableModify) {
+      console.log("Modify action enabled");
     }
-  }, [enableModify, enableSelect]);
+    if (enableSelect) {
+      console.log("Select action enabled");
+    }
+  }, [enableModify, enableSelect, typeInteraction, tempFeature]);
 
   return (
     <div
-      className={`hover:bg-blue-400 ${enableModify || enableSelect ? "bg-blue-400" : ""} hover:cursor-pointer p-2 rounded-md`}
+      className={`hover:bg-blue-400 ${enableModify || (enableSelect && typeInteraction === "Modify") ? "bg-blue-400" : ""} hover:cursor-pointer p-2 rounded-md`}
       onClick={handleClick}
     >
       <svg

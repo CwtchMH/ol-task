@@ -1,5 +1,5 @@
 export { default as GeometryType } from "./GeometryType";
-export { default as DrawAction } from "./draw-action";
-export { default as ModifyAction } from "./modify-action";
-export { default as TranslateAction } from "./translate-action";
-export { default as NotKnown } from "./not-known";
+export { default as DrawAction } from "./DrawAction";
+export { default as ModifyAction } from "./ModifyAction";
+export { default as TranslateAction } from "./TranslateAction";
+export { default as UnKnown } from "./UnKnown";

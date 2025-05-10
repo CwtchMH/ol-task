@@ -1,111 +1,87 @@
-import { useEffect, useRef, useState } from "react";
-import { OSM } from "ol/source";
-import TileLayer from "ol/layer/Tile";
-import VectorLayer from "ol/layer/Vector";
-import { Map, View } from "ol";
-import VectorSource from "ol/source/Vector";
-import { CoordinatesDisplay } from "../informations";
+import React from "react";
 import {
   DrawInteractions,
   SelectInteractions,
   TranslateInteractions,
 } from "./interactions";
-import { ICoordinates } from "../@types/type";
-import { useTypeContext } from "../context/TypeContext";
 import { ModifyInteractions } from "./interactions";
+import { Map } from "ol";
+import VectorLayer from "ol/layer/Vector";
 import Feature from "ol/Feature";
-import { styleOrigin } from "../libs/style";
 
-export const MapWrapper = () => {
-  const { enableDraw, enableSelect, enableTranslate } = useTypeContext();
-
-  const [map, setMap] = useState<Map | null>(null);
-  const [vectorLayer, setVectorLayer] = useState<VectorLayer | null>(null);
-  const [geometryType, setGeometryType] = useState<string>("");
-  const [coordinates, setCoordinates] = useState<ICoordinates>([]);
-  const [isSelected, setIsSelected] = useState<boolean>(false);
-  const [tempFeature, setTempFeature] = useState<Feature | null>(null);
-
-  const mapElement = useRef<HTMLDivElement | null>(null);
-  const mapRef = useRef<Map | null>(null);
-
-  mapRef.current = map;
-
-  useEffect(() => {
-    if (mapElement.current) {
-      setGeometryType("Polygon");
-      const raster = new TileLayer({
-        source: new OSM(),
-      });
-
-      const source = new VectorSource({ wrapX: false });
-
-      const vector = new VectorLayer({
-        source: source,
-        style: styleOrigin,
-      });
-
-      const initialMap = new Map({
-        layers: [raster, vector],
-        target: mapElement.current,
-        view: new View({
-          center: [0, 0],
-          zoom: 2,
-        }),
-      });
-
-      setMap(initialMap);
-      setVectorLayer(vector);
-
-      return () => {
-        setMap(null);
-        initialMap.setTarget("null");
-      };
-    }
-  }, []);
-
-  useEffect(() => {
-    if (tempFeature) {
-      console.log("tempFeature", tempFeature);
-    }
-  }, [tempFeature]);
-
+export const MapWrapper = ({
+  enableDraw,
+  enableSelect,
+  typeGeometry,
+  map,
+  vectorLayer,
+  mapRef,
+  typeInteraction,
+  isSelected,
+  setIsSelected,
+  tempFeature,
+  setTempFeature,
+  setEnableSelect,
+  setEnableModify,
+  setEnableTranslate,
+}: {
+  enableDraw: boolean;
+  enableSelect: boolean;
+  typeGeometry: string;
+  map: Map;
+  vectorLayer: VectorLayer;
+  mapRef: React.RefObject<HTMLDivElement>;
+  typeInteraction: string;
+  isSelected: boolean;
+  setIsSelected: (isSelected: boolean) => void;
+  tempFeature: Feature | null;
+  setTempFeature: (feature: Feature | null) => void;
+  setEnableSelect: (enableSelect: boolean) => void;
+  setEnableModify: (enableModify: boolean) => void;
+  setEnableTranslate: (enableTranslate: boolean) => void;
+}) => {
   return (
     <div className="w-full">
-      <div ref={mapElement} id="map" className="h-[100vh] w-auto"></div>
-      {/* <GeometryType setGeometryType={setGeometryType} /> */}
+      <div
+        data-testid="map"
+        id="map"
+        ref={mapRef}
+        style={{ height: "100vh", width: "auto" }}
+      ></div>
       {map && vectorLayer && enableDraw && (
         <DrawInteractions
           map={map}
           vectorLayer={vectorLayer}
-          geometryType={geometryType}
-          setCoordinates={setCoordinates}
+          geometryType={typeGeometry}
+          enableDraw={enableDraw}
         />
       )}
-      {geometryType !== "Circle" &&
-        coordinates !== null &&
-        coordinates.length > 0 && (
-          <CoordinatesDisplay coordinates={coordinates} />
-        )}
-      {map && vectorLayer && enableSelect && !enableTranslate && (
+      {map && vectorLayer && enableSelect && (
         <SelectInteractions
           map={map}
           vectorLayer={vectorLayer}
-          setCoordinates={setCoordinates}
-          setIsSelected={setIsSelected}
           setTempFeature={setTempFeature}
         />
       )}
-      {map && vectorLayer && isSelected && (
+      {map && vectorLayer && isSelected && typeInteraction === "Modify" && (
         <ModifyInteractions
           map={map}
-          setCoordinates={setCoordinates}
           tempFeature={tempFeature}
           vectorLayer={vectorLayer}
+          setIsSelected={setIsSelected}
+          setEnableSelect={setEnableSelect}
+          setEnableModify={setEnableModify}
         />
       )}
-      {map && vectorLayer && enableTranslate && (
-        <TranslateInteractions map={map} vectorLayer={vectorLayer} />
+      {map && vectorLayer && isSelected && typeInteraction === "Translate" && (
+        <TranslateInteractions
+          map={map}
+          vectorLayer={vectorLayer}
+          tempFeature={tempFeature}
+          setIsSelected={setIsSelected}
+          setEnableSelect={setEnableSelect}
+          setEnableTranslate={setEnableTranslate}
+        />
       )}
     </div>
   );

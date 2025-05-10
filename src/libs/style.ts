@@ -1,4 +1,4 @@
-import { Style, Stroke, Fill } from "ol/style";
+import { Style, Stroke, Fill, Circle } from "ol/style";
 
 export const styleOrigin = new Style({
   fill: new Fill({
@@ -8,6 +8,16 @@ export const styleOrigin = new Style({
     color: "rgba(0, 0, 255, 1)", // Màu xanh dương đậm
     width: 2,
   }),
+  image: new Circle({
+    radius: 5,
+    fill: new Fill({
+      color: "rgba(173, 216, 230, 0.5)", // Màu xanh lá nhạt
+    }),
+    stroke: new Stroke({
+      color: "rgba(0, 0, 255, 1)", // Màu xanh lá đậm
+      width: 2,
+    }),
+  }),
 });
 
 export const styleDraw = new Style({
@@ -16,7 +26,17 @@ export const styleDraw = new Style({
   }),
   stroke: new Stroke({
     color: "rgba(0, 128, 0, 1)", // Màu xanh lá đậm
-    width: 2,
+    width: 10,
+  }),
+  image: new Circle({
+    radius: 8,
+    fill: new Fill({
+      color: "rgba(144, 238, 144, 0.5)", // Màu xanh lá nhạt
+    }),
+    stroke: new Stroke({
+      color: "rgba(0, 128, 0, 1)", // Màu xanh lá đậm
+      width: 2,
+    }),
   }),
 });
 
@@ -28,6 +48,16 @@ export const styleModify = new Style({
     color: "rgba(0, 128, 0, 1)", // Màu xanh lá đậm
     width: 2,
   }),
+  image: new Circle({
+    radius: 5,
+    fill: new Fill({
+      color: "rgba(144, 238, 144, 0.5)", // Màu xanh lá nhạt
+    }),
+    stroke: new Stroke({
+      color: "rgba(0, 128, 0, 1)", // Màu xanh lá đậm
+      width: 2,
+    }),
+  }),
 });
 
 export const styleTranslate = new Style({
@@ -35,7 +65,17 @@ export const styleTranslate = new Style({
     color: "rgba(255, 182, 193, 0.5)", // Màu đỏ nhạt
   }),
   stroke: new Stroke({
-    color: "rgba(255, 0, 0, 1)", // Màu đỏ đậm
+    color: "rgba(0, 128, 0, 1)", // Màu đỏ đậm
     width: 2,
+  }),
+  image: new Circle({
+    radius: 5,
+    fill: new Fill({
+      color: "rgba(255, 182, 193, 0.5)", // Màu xanh lá nhạt
+    }),
+    stroke: new Stroke({
+      color: "rgba(0, 128, 0, 1)", // Màu xanh lá đậm
+      width: 2,
+    }),
   }),
 });
